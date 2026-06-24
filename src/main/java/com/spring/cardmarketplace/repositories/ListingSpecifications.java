@@ -1,6 +1,6 @@
-package com.spring.cardmarketplace.Repositories;
+package com.spring.cardmarketplace.repositories;
 
-import com.spring.cardmarketplace.Entities.Listing;
+import com.spring.cardmarketplace.entities.Listing;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
@@ -24,6 +24,14 @@ public class ListingSpecifications {
 
     public static Specification<Listing> priceBetween(BigDecimal min, BigDecimal max){
         return (root, query, cb) -> cb.between(root.get("askingPrice"), min, max);
+    }
+
+    public static Specification<Listing> priceBelow(BigDecimal max){
+        return (root, query, cb) -> cb.lessThanOrEqualTo(root.get("askingPrice"), max);
+    }
+
+    public static Specification<Listing> priceAbove(BigDecimal min){
+        return (root, query, cb) -> cb.greaterThanOrEqualTo(root.get("askingPrice"), min);
     }
 
     public static Specification<Listing> isActive(){

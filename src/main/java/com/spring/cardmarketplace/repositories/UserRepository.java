@@ -1,6 +1,6 @@
-package com.spring.cardmarketplace.Repositories;
+package com.spring.cardmarketplace.repositories;
 
-import com.spring.cardmarketplace.Entities.User;
+import com.spring.cardmarketplace.entities.User;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

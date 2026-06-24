@@ -1,6 +1,6 @@
-package com.spring.cardmarketplace.Repositories;
+package com.spring.cardmarketplace.repositories;
 
-import com.spring.cardmarketplace.Entities.Card;
+import com.spring.cardmarketplace.entities.Card;
 
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,5 +9,5 @@ import java.util.List;
 import java.util.UUID;
 
 public interface CardRepository extends JpaRepository<Card, UUID> {
-    List<Card> findByCardNameContaining(String cardName);
+    List<Card> findByCardNameContainingIgnoreCase(String cardName);
 }

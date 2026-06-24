@@ -1,4 +1,4 @@
-package com.spring.cardmarketplace.Entities;
+package com.spring.cardmarketplace.entities;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -19,14 +19,14 @@ public class Listing {
     private UUID id;
 
     // Many (Current class) to One (Data Field Class)
-    @ManyToOne // Many listings belong to one seller
+    @ManyToOne(fetch = FetchType.LAZY) // Many listings belong to one seller
     @JoinColumn(name = "seller_id", nullable = false) // Foreign key w/ col name "seller_id"
     private User seller; // listings.seller_id -> user.id
 
     // Only need from this direction because we can find all Listings with a certain
     // card using: listingRepository.findAll(hasCardName("Charizard"));
     // Don't need @OneToMany in card because we never need card.getListings(), Keep it unidirectional
-    @ManyToOne // Many listings can reference the same card
+    @ManyToOne(fetch = FetchType.LAZY) // Many listings can reference the same card
     @JoinColumn(name = "card_id", nullable = false)
     private Card card; // listings.card -> cards.id
 

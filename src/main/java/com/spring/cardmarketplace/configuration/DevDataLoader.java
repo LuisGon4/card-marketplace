@@ -1,9 +1,9 @@
-package com.spring.cardmarketplace;
+package com.spring.cardmarketplace.configuration;
 
-import com.spring.cardmarketplace.Entities.Card;
-import com.spring.cardmarketplace.Entities.User;
-import com.spring.cardmarketplace.Repositories.CardRepository;
-import com.spring.cardmarketplace.Repositories.UserRepository;
+import com.spring.cardmarketplace.entities.Card;
+import com.spring.cardmarketplace.entities.User;
+import com.spring.cardmarketplace.repositories.CardRepository;
+import com.spring.cardmarketplace.repositories.UserRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
 

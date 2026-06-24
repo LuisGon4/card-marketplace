@@ -1,7 +1,7 @@
-package com.spring.cardmarketplace.Repositories;
+package com.spring.cardmarketplace.repositories;
 
-import com.spring.cardmarketplace.Entities.Conversation;
-import com.spring.cardmarketplace.Entities.Message;
+import com.spring.cardmarketplace.entities.Conversation;
+import com.spring.cardmarketplace.entities.Message;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

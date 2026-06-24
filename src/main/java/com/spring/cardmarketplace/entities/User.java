@@ -1,4 +1,4 @@
-package com.spring.cardmarketplace.Entities;
+package com.spring.cardmarketplace.entities;
 
 import jakarta.persistence.*;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package com.spring.cardmarketplace.Entities;
+package com.spring.cardmarketplace.entities;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -19,15 +19,15 @@ public class Conversation {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "listing_id", nullable = false)
     private Listing listing;
 
-    @ManyToOne // Many conversations can have this sender
+    @ManyToOne(fetch = FetchType.LAZY) // Many conversations can have this sender
     @JoinColumn(name = "buyer_id", nullable = false)
     private User buyer;
 
-    @ManyToOne // Many conversations can have this recipient
+    @ManyToOne(fetch = FetchType.LAZY) // Many conversations can have this recipient
     @JoinColumn(name = "seller_id", nullable = false)
     private User seller;
 
