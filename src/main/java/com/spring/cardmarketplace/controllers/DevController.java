@@ -1,6 +1,6 @@
 package com.spring.cardmarketplace.controllers;
 
-import com.spring.cardmarketplace.configuration.FakeCurrentUserProvider;
+import com.spring.cardmarketplace.auth.FakeCurrentUserProvider;
 import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

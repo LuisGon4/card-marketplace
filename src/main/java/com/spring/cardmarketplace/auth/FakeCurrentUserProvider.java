@@ -1,4 +1,4 @@
-package com.spring.cardmarketplace.configuration;
+package com.spring.cardmarketplace.auth;
 
 import com.spring.cardmarketplace.entities.User;
 import com.spring.cardmarketplace.repositories.UserRepository;
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Profile("dev")
-public class FakeCurrentUserProvider implements CurrentUserProvider{
+public class FakeCurrentUserProvider implements CurrentUserProvider {
     private final UserRepository userRepository;
 
     @Setter

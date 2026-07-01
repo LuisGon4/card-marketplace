@@ -21,4 +21,19 @@ public class GlobalExceptionHandler {
     private ResponseEntity<String> handleListingNotFound(ListingNotFoundException ex){
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
+
+    @ExceptionHandler(SelfConversationException.class)
+    private ResponseEntity<String> handleSelfConversation(SelfConversationException ex){
+        return ResponseEntity.status(HttpStatus.valueOf(422)).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(UnauthenticatedException.class)
+    private ResponseEntity<String> handleUnauthenticated(UnauthenticatedException ex){
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    private ResponseEntity<String> handleUserNotFound(UserNotFoundException ex){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
 }

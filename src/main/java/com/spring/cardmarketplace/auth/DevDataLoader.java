@@ -1,4 +1,4 @@
-package com.spring.cardmarketplace.configuration;
+package com.spring.cardmarketplace.auth;
 
 import com.spring.cardmarketplace.entities.Card;
 import com.spring.cardmarketplace.entities.User;
@@ -27,16 +27,16 @@ public class DevDataLoader {
         alice.setEmail("alice@example.com");
         alice.setDisplayName("Alice Test");
         alice.setUsername("alice_test");
-        alice.setOAuthProvider("google");
-        alice.setOAuthSubject("fake-oauth-subject-alice");
+        alice.setOauthProvider("google");
+        alice.setOauthSubject("fake-oauth-subject-alice");
         userRepository.save(alice);
 
         User luis = new User();
         luis.setEmail("luis@example.com");
         luis.setDisplayName("Luis Test");
         luis.setUsername("luis_test");
-        luis.setOAuthProvider("google");
-        luis.setOAuthSubject("fake-oauth-subject-luis");
+        luis.setOauthProvider("google");
+        luis.setOauthSubject("fake-oauth-subject-luis");
         userRepository.save(luis);
     }
 

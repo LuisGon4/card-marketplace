@@ -27,10 +27,10 @@ public class User {
     private String username;
 
     @Column(name = "oauth_provider", nullable = false, length = 50)
-    private String oAuthProvider;
+    private String oauthProvider;
 
     @Column(name = "oauth_subject", nullable = false)
-    private String oAuthSubject;
+    private String oauthSubject;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

@@ -1,6 +1,6 @@
 package com.spring.cardmarketplace.services;
 
-import com.spring.cardmarketplace.configuration.CurrentUserProvider;
+import com.spring.cardmarketplace.auth.CurrentUserProvider;
 import com.spring.cardmarketplace.dto.request.CreateListingRequest;
 import com.spring.cardmarketplace.dto.request.ListingFilter;
 import com.spring.cardmarketplace.dto.request.UpdateListingRequest;
@@ -17,7 +17,6 @@ import com.spring.cardmarketplace.repositories.ListingSpecifications;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 

@@ -1,4 +1,4 @@
-package com.spring.cardmarketplace.configuration;
+package com.spring.cardmarketplace.auth;
 
 import com.spring.cardmarketplace.entities.User;
 

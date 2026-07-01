@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 @Getter
@@ -31,5 +31,5 @@ public class Message {
 
     @CreationTimestamp
     @Column(name = "sent_at", updatable = false)
-    private LocalDateTime sentAt;
+    private Instant sentAt;
 }
