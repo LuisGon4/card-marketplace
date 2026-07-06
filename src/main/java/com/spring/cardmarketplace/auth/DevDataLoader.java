@@ -42,20 +42,21 @@ public class DevDataLoader {
 
     @PostConstruct
     public void seedCards() {
-        if (cardRepository.count() > 0) {
-            return;
+
+        if (cardRepository.count() == 0) {
+            Card charizardEx = new Card();
+            charizardEx.setCardName("Charizard ex");
+            charizardEx.setSetName("Scarlet & Violet 151");
+            charizardEx.setRarity("Ultra Rare");
+            charizardEx.setTcgDexId("sv03.5-183");
+            charizardEx.setJustTcgId("pokemon-sv-scarlet-violet-151-charizard-ex-183-165-ultra-rare");
+            charizardEx.setImageUrl("https://assets.tcgdex.net/en/sv/sv03.5/183/high.webp");
+            charizardEx.setCustom(false);
+
+            cardRepository.save(charizardEx);
         }
-
-        saveCard("Pikachu", "Base Set", "Common", "base1-58", "https://images.tcgdex.net/base1/58.png");
-        saveCard("Charizard", "Base Set", "Rare Holo", "base1-4", "https://images.tcgdex.net/base1/4.png");
-        saveCard("Blastoise", "Base Set", "Rare Holo", "base1-2", "https://images.tcgdex.net/base1/2.png");
-        saveCard("Venusaur", "Base Set", "Rare Holo", "base1-15", "https://images.tcgdex.net/base1/15.png");
-        saveCard("Mewtwo", "Base Set", "Rare Holo", "base1-10", "https://images.tcgdex.net/base1/10.png");
-        saveCard("Gengar", "Fossil", "Rare Holo", "fossil-5", "https://images.tcgdex.net/fossil/5.png");
-        saveCard("Furret", "Darkness Ablaze", "Common", "swsh3-136", "https://images.tcgdex.net/swsh3/136.png");
-        saveCard("Eevee", "Jungle", "Common", "jungle-51", "https://images.tcgdex.net/jungle/51.png");
     }
-
+/*
     private void saveCard(String cardName, String setName, String rarity, String tcgDexId, String imageUrl) {
         Card card = new Card();
         card.setCardName(cardName);
@@ -67,4 +68,6 @@ public class DevDataLoader {
         card.setCustom(false);
         cardRepository.save(card);
     }
+
+ */
 }

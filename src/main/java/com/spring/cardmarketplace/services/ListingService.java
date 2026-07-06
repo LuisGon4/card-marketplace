@@ -1,6 +1,7 @@
 package com.spring.cardmarketplace.services;
 
 import com.spring.cardmarketplace.auth.CurrentUserProvider;
+import com.spring.cardmarketplace.client.JustTcgClient;
 import com.spring.cardmarketplace.dto.request.CreateListingRequest;
 import com.spring.cardmarketplace.dto.request.ListingFilter;
 import com.spring.cardmarketplace.dto.request.UpdateListingRequest;
@@ -17,19 +18,24 @@ import com.spring.cardmarketplace.repositories.ListingSpecifications;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
 @Service
 public class ListingService {
+    private static final BigDecimal FLAG_MULTIPLIER = new BigDecimal("1.5");
+
     private final ListingRepository listingRepository;
     private final CardRepository cardRepository;
     private final CurrentUserProvider currentUserProvider;
+    private final JustTcgClient justTcgClient;
 
-    public ListingService(ListingRepository listingRepository, CardRepository cardRepository, CurrentUserProvider currentUserProvider){
+    public ListingService(ListingRepository listingRepository, CardRepository cardRepository, CurrentUserProvider currentUserProvider, JustTcgClient justTcgClient){
         this.listingRepository = listingRepository;
         this.cardRepository = cardRepository;
         this.currentUserProvider = currentUserProvider;
+        this.justTcgClient = justTcgClient;
     }
 
     public ListingResponse findById(UUID listingId){
@@ -59,6 +65,7 @@ public class ListingService {
         listing.setDescription(request.description());
         listing.setActive(true);
 
+        applyMarketPrice(listing, card);
         Listing saved = listingRepository.save(listing);
 
         return toResponse(saved);
@@ -140,6 +147,28 @@ public class ListingService {
                 .stream()
                 .map(this::toResponse)
                 .toList();
+    }
+
+    private void applyMarketPrice(Listing listing, Card card){
+        if(card.getJustTcgId() == null){
+            return;
+        }
+
+        BigDecimal marketPrice = justTcgClient.fetchPrice(
+                card.getJustTcgId(),
+                listing.getCondition(),
+                listing.getPrinting()
+        );
+
+        if(marketPrice == null){
+            return;
+        }
+
+        listing.setMarketPrice(marketPrice);
+
+        if(listing.getAskingPrice().compareTo(marketPrice.multiply(FLAG_MULTIPLIER)) > 0){
+            listing.setPriceFlagged(true);
+        }
     }
 
     private ListingResponse toResponse(Listing listing){

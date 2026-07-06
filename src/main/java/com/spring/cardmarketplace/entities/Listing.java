@@ -30,11 +30,13 @@ public class Listing {
     @JoinColumn(name = "card_id", nullable = false)
     private Card card; // listings.card -> cards.id
 
-    @Column(nullable = false, length = 50)
-    private String printing;
-
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private String condition; // "DMG", "HP", "MP", "LP", "NM", "M"
+    private Printing printing;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 30)
+    private Condition condition;
 
     @Column(name = "asking_price", nullable = false)
     private BigDecimal askingPrice;

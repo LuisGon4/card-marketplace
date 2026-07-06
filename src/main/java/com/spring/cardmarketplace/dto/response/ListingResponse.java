@@ -1,5 +1,8 @@
 package com.spring.cardmarketplace.dto.response;
 
+import com.spring.cardmarketplace.entities.Condition;
+import com.spring.cardmarketplace.entities.Printing;
+
 import java.math.BigDecimal;
 import java.util.UUID;
 
@@ -8,8 +11,8 @@ public record ListingResponse(
         UUID id,
         UUID cardId,
         String cardName,
-        String condition,
-        String printing,
+        Condition condition,
+        Printing printing,
         BigDecimal askingPrice,
         BigDecimal marketPrice,
         boolean priceFlagged,

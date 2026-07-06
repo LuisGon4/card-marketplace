@@ -13,7 +13,7 @@ public class CardMarketplaceApplication {
     public static void main(String[] args) {
         SpringApplication.run(CardMarketplaceApplication.class, args);
     }
-    /*
+
     @Configuration
     public class SecurityConfig {
 
@@ -24,6 +24,6 @@ public class CardMarketplaceApplication {
             return http.build();
         }
     }
-     */
+
 
 }
