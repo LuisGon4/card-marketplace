@@ -43,15 +43,15 @@ public class DevDataLoader {
     @PostConstruct
     public void seedCards() {
 
-        if (cardRepository.count() == 0) {
+        if (cardRepository.count() == 1) {
             Card charizardEx = new Card();
-            charizardEx.setCardName("Charizard ex");
+            charizardEx.setCardName("Blastoise ex");
             charizardEx.setSetName("Scarlet & Violet 151");
             charizardEx.setRarity("Ultra Rare");
-            charizardEx.setTcgDexId("sv03.5-183");
-            charizardEx.setJustTcgId("pokemon-sv-scarlet-violet-151-charizard-ex-183-165-ultra-rare");
-            charizardEx.setImageUrl("https://assets.tcgdex.net/en/sv/sv03.5/183/high.webp");
-            charizardEx.setCustom(false);
+            charizardEx.setTcgDexId("sv03.5-184");
+            charizardEx.setJustTcgId("pokemon-sv-scarlet-violet-151-blastoise-ex-184-165-ultra-rare");
+            charizardEx.setImageUrl("https://assets.tcgdex.net/en/sv/sv03.5/184/high.webp");
+            charizardEx.setCustom(true);
 
             cardRepository.save(charizardEx);
         }

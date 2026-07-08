@@ -1,6 +1,9 @@
 package com.spring.cardmarketplace.controllers;
 
+import com.spring.cardmarketplace.dto.response.ValuationResponse;
 import com.spring.cardmarketplace.entities.Card;
+import com.spring.cardmarketplace.entities.Condition;
+import com.spring.cardmarketplace.entities.Printing;
 import com.spring.cardmarketplace.services.CardService;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,11 +28,9 @@ public class CardController {
 
     // Placeholder before actual implementation logic
     @GetMapping("/{id}/valuation")
-    public Map<String, Object> getValuation(@PathVariable UUID id){
-        Map<String, Object> placeholder = new HashMap<>();
-        placeholder.put("cardId", id);
-        placeholder.put("marketPrice", null);
-        placeholder.put("message", "Valuation logic not implemented yet — Phase 3");
-        return placeholder;
+    public ValuationResponse getValuation(@PathVariable UUID id,
+                                          @RequestParam Condition condition,
+                                          @RequestParam Printing printing){
+        return cardService.getValuation(id, condition, printing);
     }
 }

@@ -24,6 +24,4 @@ public class CardMarketplaceApplication {
             return http.build();
         }
     }
-
-
 }

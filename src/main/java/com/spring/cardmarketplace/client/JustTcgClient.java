@@ -40,6 +40,5 @@ public class JustTcgClient {
         } catch(HttpClientErrorException.NotFound e){
             return null;
         }
-
     }
 }

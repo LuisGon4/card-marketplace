@@ -42,6 +42,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleUnreadableMessage(HttpMessageNotReadableException ex) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body("Malformed request body or invalid field value.");
+                .body(ex.getMessage());
+    }
+
+    @ExceptionHandler(ConversationNotFoundException.class)
+    public ResponseEntity<String> handleConversationNotFound(ConversationNotFoundException ex){
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(ex.getMessage());
     }
 }

@@ -29,13 +29,13 @@ public class ListingService {
     private final ListingRepository listingRepository;
     private final CardRepository cardRepository;
     private final CurrentUserProvider currentUserProvider;
-    private final JustTcgClient justTcgClient;
+    private final CardPricingService cardPricingService;
 
-    public ListingService(ListingRepository listingRepository, CardRepository cardRepository, CurrentUserProvider currentUserProvider, JustTcgClient justTcgClient){
+    public ListingService(ListingRepository listingRepository, CardRepository cardRepository, CurrentUserProvider currentUserProvider, CardPricingService cardPricingService){
         this.listingRepository = listingRepository;
         this.cardRepository = cardRepository;
         this.currentUserProvider = currentUserProvider;
-        this.justTcgClient = justTcgClient;
+        this.cardPricingService = cardPricingService;
     }
 
     public ListingResponse findById(UUID listingId){
@@ -46,6 +46,10 @@ public class ListingService {
 
         return toResponse(listing);
     }
+
+
+
+
 
     public ListingResponse create(CreateListingRequest request){
         Card card = cardRepository.findById(request.cardId()).
@@ -70,6 +74,10 @@ public class ListingService {
 
         return toResponse(saved);
     }
+
+
+
+
 
     public ListingResponse update(UUID listingId, UpdateListingRequest request){
         Listing listing = listingRepository.findById(listingId).
@@ -97,6 +105,10 @@ public class ListingService {
         return toResponse(updated);
     }
 
+
+
+
+
     public void delete(UUID listingId){
         Listing listing = listingRepository.findById(listingId).
                 orElseThrow(() -> new ListingNotFoundException(
@@ -115,6 +127,10 @@ public class ListingService {
 
         listingRepository.save(listing);
     }
+
+
+
+
 
     public List<ListingResponse> findAll(ListingFilter filter){
         Specification<Listing> spec = ListingSpecifications.isActive();
@@ -154,7 +170,7 @@ public class ListingService {
             return;
         }
 
-        BigDecimal marketPrice = justTcgClient.fetchPrice(
+        BigDecimal marketPrice = cardPricingService.getCachedPrice(
                 card.getJustTcgId(),
                 listing.getCondition(),
                 listing.getPrinting()
@@ -170,6 +186,9 @@ public class ListingService {
             listing.setPriceFlagged(true);
         }
     }
+
+
+
 
     private ListingResponse toResponse(Listing listing){
         return new ListingResponse(
