@@ -1,0 +1,6 @@
+.git
+.idea
+build
+.env
+scratch
+*.md
