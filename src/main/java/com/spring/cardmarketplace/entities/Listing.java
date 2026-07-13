@@ -1,5 +1,6 @@
 package com.spring.cardmarketplace.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -7,6 +8,8 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -52,6 +55,10 @@ public class Listing {
 
     @Column(length = 250)
     private String description;
+
+    @OrderBy("position ASC") @JsonIgnore
+    @OneToMany(mappedBy = "listing")
+    private List<ListingImage> listingImages = new ArrayList<>();
 
     @Column(name = "is_active", nullable = false)
     private boolean active;

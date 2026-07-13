@@ -176,9 +176,7 @@ public class ListingService {
                 listing.getPrinting()
         );
 
-        if(marketPrice == null){
-            return;
-        }
+        if(marketPrice == null){return;}
 
         listing.setMarketPrice(marketPrice);
 
