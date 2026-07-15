@@ -51,7 +51,7 @@ public class ImageStorageService {
         }
 
         if(!listing.isActive()){
-            throw new ForbiddenOperationException("Listing is not active");
+            throw new InactiveListingException("Listing is not active with id: " + listingId);
         }
 
         if(request.fileSizeBytes() > MAX_FILE_SIZE_BYTES){

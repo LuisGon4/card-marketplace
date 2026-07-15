@@ -70,4 +70,11 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.PAYLOAD_TOO_LARGE)
                 .body(ex.getMessage());
     }
+
+    @ExceptionHandler(InactiveListingException.class)
+    public ResponseEntity<String> handleInactiveListing(InactiveListingException ex){
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(ex.getMessage());
+    }
 }
