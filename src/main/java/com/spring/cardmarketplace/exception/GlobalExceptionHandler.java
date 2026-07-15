@@ -9,33 +9,45 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(ForbiddenOperationException.class)
-    private ResponseEntity<String> handleForbidden(ForbiddenOperationException ex){
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
+    public ResponseEntity<String> handleForbidden(ForbiddenOperationException ex){
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(ex.getMessage());
     }
 
     @ExceptionHandler(CardNotFoundException.class)
-    private ResponseEntity<String> handleCardNotFound(CardNotFoundException ex){
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    public ResponseEntity<String> handleCardNotFound(CardNotFoundException ex){
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(ex.getMessage());
     }
 
     @ExceptionHandler(ListingNotFoundException.class)
-    private ResponseEntity<String> handleListingNotFound(ListingNotFoundException ex){
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    public ResponseEntity<String> handleListingNotFound(ListingNotFoundException ex){
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(ex.getMessage());
     }
 
     @ExceptionHandler(SelfConversationException.class)
-    private ResponseEntity<String> handleSelfConversation(SelfConversationException ex){
-        return ResponseEntity.status(HttpStatus.valueOf(422)).body(ex.getMessage());
+    public ResponseEntity<String> handleSelfConversation(SelfConversationException ex){
+        return ResponseEntity
+                .status(HttpStatus.UNPROCESSABLE_ENTITY)
+                .body(ex.getMessage());
     }
 
     @ExceptionHandler(UnauthenticatedException.class)
-    private ResponseEntity<String> handleUnauthenticated(UnauthenticatedException ex){
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
+    public ResponseEntity<String> handleUnauthenticated(UnauthenticatedException ex){
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(ex.getMessage());
     }
 
     @ExceptionHandler(UserNotFoundException.class)
-    private ResponseEntity<String> handleUserNotFound(UserNotFoundException ex){
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    public ResponseEntity<String> handleUserNotFound(UserNotFoundException ex){
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(ex.getMessage());
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
@@ -49,6 +61,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleConversationNotFound(ConversationNotFoundException ex){
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
+                .body(ex.getMessage());
+    }
+
+    @ExceptionHandler(FileSizeLimitExceededException.class)
+    public ResponseEntity<String> handleFileSizeLimitExceeded(FileSizeLimitExceededException ex){
+        return ResponseEntity
+                .status(HttpStatus.PAYLOAD_TOO_LARGE)
                 .body(ex.getMessage());
     }
 }

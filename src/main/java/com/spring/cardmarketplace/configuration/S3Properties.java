@@ -1,4 +1,4 @@
-package com.spring.cardmarketplace.dto.s3properties;
+package com.spring.cardmarketplace.configuration;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -8,5 +8,5 @@ public record S3Properties (
         String region,
         String accessKey,
         String secretKey,
-        String bucketName
+        String bucket
 ){}
