@@ -79,5 +79,10 @@ public class ImageStorageService {
                 imageId,
                 request.fileSizeBytes()
         );
+
+
+        public confirm(UUID imageId){
+
+        }
     }
 }
