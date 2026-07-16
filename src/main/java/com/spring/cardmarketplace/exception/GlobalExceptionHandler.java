@@ -77,4 +77,18 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.CONFLICT)
                 .body(ex.getMessage());
     }
+
+    @ExceptionHandler(ImageCapacityExceededException.class)
+    public ResponseEntity<String> handleImageCapacityExceeded(ImageCapacityExceededException ex){
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(ex.getMessage());
+    }
+
+    @ExceptionHandler(UploadNotFoundException.class)
+    public ResponseEntity<String> handleUploadNotFound(UploadNotFoundException ex){
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(ex.getMessage());
+    }
 }

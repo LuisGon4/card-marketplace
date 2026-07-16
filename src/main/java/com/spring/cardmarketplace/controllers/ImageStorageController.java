@@ -24,8 +24,5 @@ public class ImageStorageController {
         return imageStorageService.presignUpload(listingId, request);
     }
 
-    @PostMapping
-    public ConfirmUploadResponse confirmUpload(@NotNull UUID imageId){
 
-    }
 }

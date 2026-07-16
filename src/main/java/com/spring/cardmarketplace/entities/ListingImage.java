@@ -12,7 +12,6 @@ import java.util.UUID;
 @Table(name = "listing_images")
 public class ListingImage {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @ManyToOne
@@ -28,4 +27,13 @@ public class ListingImage {
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private Instant createdAt;
+
+    protected ListingImage() {}  // for Hibernate only
+
+    public ListingImage(UUID id, Listing listing, String imageKey, int position) {
+        this.id = id;
+        this.listing = listing;
+        this.imageKey = imageKey;
+        this.position = position;
+    }
 }
