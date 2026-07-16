@@ -1,4 +1,10 @@
 package com.spring.cardmarketplace.dto.request;
 
-public record ConfirmUploadRequest() {
+import jakarta.validation.constraints.NotNull;
+
+import java.util.UUID;
+
+public record ConfirmUploadRequest(
+        @NotNull UUID imageId
+) {
 }

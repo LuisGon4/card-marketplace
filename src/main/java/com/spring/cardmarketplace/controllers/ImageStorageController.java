@@ -1,10 +1,14 @@
 package com.spring.cardmarketplace.controllers;
 
+import com.spring.cardmarketplace.dto.request.ConfirmUploadRequest;
 import com.spring.cardmarketplace.dto.request.PresignUploadRequest;
+import com.spring.cardmarketplace.dto.response.ConfirmResult;
+import com.spring.cardmarketplace.dto.response.ConfirmUploadResponse;
 import com.spring.cardmarketplace.dto.response.PresignUploadResponse;
 import com.spring.cardmarketplace.services.ImageStorageService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -25,4 +29,11 @@ public class ImageStorageController {
     }
 
 
+    @PostMapping
+    public ResponseEntity<ConfirmUploadResponse> confirmUpload(UUID listingId, ConfirmUploadRequest request){
+        ConfirmResult result = imageStorageService.confirm(listingId, request.imageId());
+        return ResponseEntity
+                .status(result.created() ? HttpStatus.CREATED : HttpStatus.OK)
+                .body(result.response());
+    }
 }
