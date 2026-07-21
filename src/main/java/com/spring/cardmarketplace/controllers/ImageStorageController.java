@@ -30,7 +30,8 @@ public class ImageStorageController {
 
 
     @PostMapping
-    public ResponseEntity<ConfirmUploadResponse> confirmUpload(UUID listingId, ConfirmUploadRequest request){
+    public ResponseEntity<ConfirmUploadResponse> confirmUpload(@PathVariable UUID listingId,
+                                                               @Valid @RequestBody ConfirmUploadRequest request){
         ConfirmResult result = imageStorageService.confirm(listingId, request.imageId());
         return ResponseEntity
                 .status(result.created() ? HttpStatus.CREATED : HttpStatus.OK)

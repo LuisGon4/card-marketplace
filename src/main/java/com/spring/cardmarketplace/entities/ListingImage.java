@@ -28,6 +28,7 @@ public class ListingImage {
     @Column(name = "created_at", updatable = false)
     private Instant createdAt;
 
+
     protected ListingImage() {}  // for Hibernate only
 
     public ListingImage(UUID id, Listing listing, String imageKey, int position) {

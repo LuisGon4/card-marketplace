@@ -26,7 +26,7 @@ import java.util.UUID;
 
 @Service
 public class ImageStorageService {
-    private static final Duration PRESIGN_EXPIRY = Duration.ofMinutes(5);
+    private static final Duration PRESIGN_EXPIRY = Duration.ofMinutes(30);
     private static final long MAX_FILE_SIZE_BYTES = 5_242_880;
     private static final String CONTENT_TYPE_JPEG = "image/jpeg";
     private static final long MAX_NUMBER_OF_IMAGES = 5;
@@ -98,14 +98,6 @@ public class ImageStorageService {
     }
 
     public ConfirmResult confirm(UUID listingId, UUID imageId) {
-        Optional<ListingImage> existing = listingImageRepository.findById(imageId);
-        if (existing.isPresent()) {
-            ListingImage image = existing.get();
-            return new ConfirmResult(
-                    new ConfirmUploadResponse(image.getId(), image.getPosition()),
-                    false
-            );
-        }
 
         Listing listing = listingRepository.findById(listingId).orElseThrow(
                 () -> new ListingNotFoundException("Listing not found with id: " + listingId)
@@ -113,7 +105,23 @@ public class ImageStorageService {
 
         User user = currentUserProvider.getCurrentUser();
         if (!user.getId().equals(listing.getSeller().getId())) {
-            throw new ForbiddenOperationException("Not allowed to confirm an upload for a listing you don't own");
+            throw new ForbiddenOperationException(
+                    "Not allowed to confirm an upload for a listing you don't own");
+        }
+
+        // Idempotency exit — only reachable after authorization passes
+        Optional<ListingImage> existing = listingImageRepository.findById(imageId);
+        if (existing.isPresent()) {
+            ListingImage image = existing.get();
+
+            if (!image.getListing().getId().equals(listingId)) {
+                throw new UploadNotFoundException("No uploaded file found for imageId: " + imageId);
+            }
+
+            return new ConfirmResult(
+                    new ConfirmUploadResponse(image.getId(), image.getPosition()),
+                    false
+            );
         }
 
         if (!listing.isActive()) {
@@ -122,7 +130,8 @@ public class ImageStorageService {
 
         long numOfImages = listingImageRepository.countByListing(listing);
         if (numOfImages >= MAX_NUMBER_OF_IMAGES) {
-            throw new ImageCapacityExceededException("Image capacity exceeded for listing with id: " + listingId);
+            throw new ImageCapacityExceededException(
+                    "Image capacity exceeded for listing with id: " + listingId);
         }
 
         String stagingKey = stagingKey(imageId);
@@ -139,7 +148,8 @@ public class ImageStorageService {
 
         if (head.contentLength() > MAX_FILE_SIZE_BYTES
                 || !CONTENT_TYPE_JPEG.equals(head.contentType())) {
-            throw new UploadNotFoundException("Uploaded file does not match upload contract for imageId: " + imageId);
+            throw new UploadNotFoundException(
+                    "Uploaded file does not match upload contract for imageId: " + imageId);
         }
 
         String finalKey = finalKey(listingId, imageId);
