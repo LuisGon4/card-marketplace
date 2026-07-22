@@ -1,12 +1,12 @@
 package com.spring.cardmarketplace.services;
 
 import com.spring.cardmarketplace.auth.CurrentUserProvider;
+import com.spring.cardmarketplace.configuration.S3Properties;
 import com.spring.cardmarketplace.dto.request.CreateListingRequest;
 import com.spring.cardmarketplace.dto.request.ListingFilter;
-import com.spring.cardmarketplace.dto.response.ListingImageDto;
+import com.spring.cardmarketplace.dto.response.ListingDetailsResponse;
 import com.spring.cardmarketplace.dto.request.UpdateListingRequest;
-import com.spring.cardmarketplace.dto.response.ListingImageResponse;
-import com.spring.cardmarketplace.dto.response.ListingResponse;
+import com.spring.cardmarketplace.dto.response.ListingSummaryResponse;
 import com.spring.cardmarketplace.entities.Card;
 import com.spring.cardmarketplace.entities.Listing;
 import com.spring.cardmarketplace.entities.ListingImage;
@@ -18,53 +18,61 @@ import com.spring.cardmarketplace.repositories.CardRepository;
 import com.spring.cardmarketplace.repositories.ListingImageRepository;
 import com.spring.cardmarketplace.repositories.ListingRepository;
 import com.spring.cardmarketplace.repositories.ListingSpecifications;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class ListingService {
     private static final BigDecimal FLAG_MULTIPLIER = new BigDecimal("1.5");
+    private static final int THUMBNAIL_POSITION = 0;
 
     private final ListingRepository listingRepository;
     private final CardRepository cardRepository;
     private final CurrentUserProvider currentUserProvider;
     private final CardPricingService cardPricingService;
     private final ListingImageRepository listingImageRepository;
-    private final String cdnBaseUrl;
+    private final S3Properties s3Properties;
 
     public ListingService(ListingRepository listingRepository,
                           CardRepository cardRepository,
                           CurrentUserProvider currentUserProvider,
                           CardPricingService cardPricingService,
                           ListingImageRepository listingImageRepository,
-                          @Value("${app.cdn.base-url}") String cdnBaseUrl) {
+                          S3Properties s3Properties) {
         this.listingRepository = listingRepository;
         this.cardRepository = cardRepository;
         this.currentUserProvider = currentUserProvider;
         this.cardPricingService = cardPricingService;
         this.listingImageRepository = listingImageRepository;
-        this.cdnBaseUrl = cdnBaseUrl;
+        this.s3Properties = s3Properties;
     }
 
-    public ListingResponse findById(UUID listingId){
-        Listing listing = listingRepository.findById(listingId)
+    public ListingDetailsResponse findById(UUID listingId){
+        Listing listing = listingRepository.findByIdAndActiveTrue(listingId)
                 .orElseThrow(() -> new ListingNotFoundException(
                         "No listing found with id: " + listingId
                 ));
 
-        return toResponse(listing);
+        List<String> imageUrls = listingImageRepository
+                .findByListingIdOrderByPositionAsc(listingId)
+                .stream()
+                .map(img -> buildUrl(img.getImageKey()))
+                .toList();
+
+        return toDetailResponse(listing, imageUrls);
     }
 
 
 
 
 
-    public ListingResponse create(CreateListingRequest request){
+    public ListingSummaryResponse create(CreateListingRequest request){
         Card card = cardRepository.findById(request.cardId()).
                 orElseThrow(() -> new CardNotFoundException(
                         "Card not found with id: " + request.cardId()
@@ -85,14 +93,14 @@ public class ListingService {
         applyMarketPrice(listing, card);
         Listing saved = listingRepository.save(listing);
 
-        return toResponse(saved);
+        return toSummaryResponse(saved, null);
     }
 
 
 
 
 
-    public ListingResponse update(UUID listingId, UpdateListingRequest request){
+    public ListingSummaryResponse update(UUID listingId, UpdateListingRequest request){
         Listing listing = listingRepository.findById(listingId).
                 orElseThrow(() -> new ListingNotFoundException(
                         "No listing found with id: " + listingId));
@@ -115,7 +123,7 @@ public class ListingService {
 
         Listing updated = listingRepository.save(listing);
 
-        return toResponse(updated);
+        return toSummaryResponse(updated, null);
     }
 
 
@@ -145,7 +153,7 @@ public class ListingService {
 
 
 
-    public List<ListingResponse> findAll(ListingFilter filter){
+    public List<ListingSummaryResponse> findAll(ListingFilter filter){
         Specification<Listing> spec = ListingSpecifications.isActive();
 
         if(filter.cardName() != null){
@@ -172,9 +180,25 @@ public class ListingService {
             spec = spec.and(ListingSpecifications.priceBelow(filter.maxPrice()));
         }
 
-        return listingRepository.findAll(spec)
+        List<Listing> listings = listingRepository.findAll(spec);
+        if (listings.isEmpty()) {
+            return List.of();
+        }
+
+        Map<UUID, String> thumbnailKeys = listingImageRepository
+                .findByListingInAndPosition(listings, THUMBNAIL_POSITION)
                 .stream()
-                .map(this::toResponse)
+                .collect(Collectors.toMap(
+                        img -> img.getListing().getId(),
+                        ListingImage::getImageKey
+                ));
+
+        return listings.stream()
+                .map(listing -> {
+                    String key = thumbnailKeys.get(listing.getId());
+                    String thumbnailUrl = key == null ? null : buildUrl(key);
+                    return toSummaryResponse(listing, thumbnailUrl);
+                })
                 .toList();
     }
 
@@ -200,34 +224,14 @@ public class ListingService {
 
 
 
-    public ListingImageResponse getImagesForListing(UUID listingId){
-        if(!listingRepository.existsById(listingId)){
-            throw new ListingNotFoundException("No listing found with id: " + listingId);
-        }
-        List<ListingImage> images = listingImageRepository.findByListingIdOrderByPositionAsc(listingId);
-
-        List<ListingImageDto> imageDtos = images.stream()
-                .map(img -> new ListingImageDto(
-                        img.getId(),
-                        buildUrl(img.getImageKey()),
-                        img.getPosition()))
-                .toList();
-
-        return new ListingImageResponse(imageDtos);
-    }
-
-
-
-
     private String buildUrl(String imageKey){
-        return cdnBaseUrl + "/" + imageKey;
+        return s3Properties.publicBaseUrl() + "/" + imageKey;
     }
 
 
 
-
-    private ListingResponse toResponse(Listing listing){
-        return new ListingResponse(
+    private ListingDetailsResponse toDetailResponse(Listing listing, List<String> imageUrls) {
+        return new ListingDetailsResponse(
                 listing.getId(),
                 listing.getCard().getId(),
                 listing.getCard().getCardName(),
@@ -239,7 +243,27 @@ public class ListingService {
                 listing.getLocation(),
                 listing.getDescription(),
                 listing.getSeller().getUsername(),
-                listing.getSeller().getId()
+                listing.getSeller().getId(),
+                imageUrls
+        );
+    }
+
+
+    private ListingSummaryResponse toSummaryResponse(Listing listing, String thumbnailUrl){
+        return new ListingSummaryResponse(
+                listing.getId(),
+                listing.getCard().getId(),
+                listing.getCard().getCardName(),
+                listing.getCondition(),
+                listing.getPrinting(),
+                listing.getAskingPrice(),
+                listing.getMarketPrice(),
+                listing.isPriceFlagged(),
+                listing.getLocation(),
+                listing.getDescription(),
+                listing.getSeller().getUsername(),
+                listing.getSeller().getId(),
+                thumbnailUrl
         );
     }
 }

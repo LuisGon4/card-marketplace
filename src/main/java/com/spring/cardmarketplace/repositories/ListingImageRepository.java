@@ -12,4 +12,8 @@ public interface ListingImageRepository extends JpaRepository<ListingImage, UUID
     long countByListing(Listing listing);
 
     List<ListingImage> findByListingIdOrderByPositionAsc(UUID listingId);
+
+    List<ListingImage> findByListingInAndPosition(List<Listing> listings, int position);
+
+    //List<ListingImage> findByListingOrderByPositionAsc(Listing listing)
 }

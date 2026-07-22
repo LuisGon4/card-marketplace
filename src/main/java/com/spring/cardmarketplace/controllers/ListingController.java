@@ -3,8 +3,8 @@ package com.spring.cardmarketplace.controllers;
 import com.spring.cardmarketplace.dto.request.CreateListingRequest;
 import com.spring.cardmarketplace.dto.request.ListingFilter;
 import com.spring.cardmarketplace.dto.request.UpdateListingRequest;
-import com.spring.cardmarketplace.dto.response.ListingImageResponse;
-import com.spring.cardmarketplace.dto.response.ListingResponse;
+import com.spring.cardmarketplace.dto.response.ListingDetailsResponse;
+import com.spring.cardmarketplace.dto.response.ListingSummaryResponse;
 import com.spring.cardmarketplace.services.ListingService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -23,28 +23,23 @@ public class ListingController {
     }
 
     @GetMapping
-    public List<ListingResponse> getListings(ListingFilter filter){
+    public List<ListingSummaryResponse> getListings(ListingFilter filter){
         return listingService.findAll(filter);
     }
 
     @GetMapping("/{id}")
-    public ListingResponse getListing(@PathVariable UUID id){
+    public ListingDetailsResponse getListing(@PathVariable UUID id){
         return listingService.findById(id);
-    }
-
-    @GetMapping("/{listingId}/images")
-    public ListingImageResponse getListingImages(@PathVariable UUID listingId){
-        return listingService.getImagesForListing(listingId);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ListingResponse createListing(@Valid @RequestBody CreateListingRequest request){
+    public ListingSummaryResponse createListing(@Valid @RequestBody CreateListingRequest request){
         return listingService.create(request);
     }
 
     @PatchMapping("/{id}")
-    public ListingResponse updateListing(@PathVariable UUID id, @RequestBody UpdateListingRequest request){
+    public ListingSummaryResponse updateListing(@PathVariable UUID id, @RequestBody UpdateListingRequest request){
         return listingService.update(id, request);
     }
 

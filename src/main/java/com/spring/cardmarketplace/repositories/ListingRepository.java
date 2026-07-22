@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface ListingRepository extends JpaRepository<Listing, UUID>,
@@ -15,4 +16,7 @@ public interface ListingRepository extends JpaRepository<Listing, UUID>,
     @Override
     @EntityGraph(attributePaths = {"card", "seller"})
     List<Listing> findAll(Specification<Listing> spec);
+
+    @EntityGraph(attributePaths = {"card", "seller"})
+    Optional<Listing> findByIdAndActiveTrue(UUID id);
 }

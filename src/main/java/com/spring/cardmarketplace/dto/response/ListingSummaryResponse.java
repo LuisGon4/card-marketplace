@@ -6,8 +6,7 @@ import com.spring.cardmarketplace.entities.Printing;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-// All fields a Listing may need
-public record ListingResponse(
+public record ListingSummaryResponse(
         UUID id,
         UUID cardId,
         String cardName,
@@ -19,5 +18,6 @@ public record ListingResponse(
         String location,
         String description,
         String sellerUsername,
-        UUID sellerId
+        UUID sellerId,
+        String thumbnailUrl
 ) {}

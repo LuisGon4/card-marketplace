@@ -8,5 +8,6 @@ public record S3Properties (
         String region,
         String accessKey,
         String secretKey,
-        String bucket
+        String bucket,
+        String publicBaseUrl
 ){}
