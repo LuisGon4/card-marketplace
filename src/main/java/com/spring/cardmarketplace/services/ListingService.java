@@ -1,24 +1,29 @@
 package com.spring.cardmarketplace.services;
 
 import com.spring.cardmarketplace.auth.CurrentUserProvider;
-import com.spring.cardmarketplace.client.JustTcgClient;
 import com.spring.cardmarketplace.dto.request.CreateListingRequest;
 import com.spring.cardmarketplace.dto.request.ListingFilter;
+import com.spring.cardmarketplace.dto.request.ListingImageDto;
 import com.spring.cardmarketplace.dto.request.UpdateListingRequest;
+import com.spring.cardmarketplace.dto.response.ListingImageResponse;
 import com.spring.cardmarketplace.dto.response.ListingResponse;
 import com.spring.cardmarketplace.entities.Card;
 import com.spring.cardmarketplace.entities.Listing;
+import com.spring.cardmarketplace.entities.ListingImage;
 import com.spring.cardmarketplace.entities.User;
 import com.spring.cardmarketplace.exception.CardNotFoundException;
 import com.spring.cardmarketplace.exception.ForbiddenOperationException;
 import com.spring.cardmarketplace.exception.ListingNotFoundException;
 import com.spring.cardmarketplace.repositories.CardRepository;
+import com.spring.cardmarketplace.repositories.ListingImageRepository;
 import com.spring.cardmarketplace.repositories.ListingRepository;
 import com.spring.cardmarketplace.repositories.ListingSpecifications;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,12 +35,21 @@ public class ListingService {
     private final CardRepository cardRepository;
     private final CurrentUserProvider currentUserProvider;
     private final CardPricingService cardPricingService;
+    private final ListingImageRepository listingImageRepository;
+    private final String cdnBaseUrl;
 
-    public ListingService(ListingRepository listingRepository, CardRepository cardRepository, CurrentUserProvider currentUserProvider, CardPricingService cardPricingService){
+    public ListingService(ListingRepository listingRepository,
+                          CardRepository cardRepository,
+                          CurrentUserProvider currentUserProvider,
+                          CardPricingService cardPricingService,
+                          ListingImageRepository listingImageRepository,
+                          @Value("${app.cdn.base-url}") String cdnBaseUrl) {
         this.listingRepository = listingRepository;
         this.cardRepository = cardRepository;
         this.currentUserProvider = currentUserProvider;
         this.cardPricingService = cardPricingService;
+        this.listingImageRepository = listingImageRepository;
+        this.cdnBaseUrl = cdnBaseUrl;
     }
 
     public ListingResponse findById(UUID listingId){
@@ -183,6 +197,29 @@ public class ListingService {
         if(listing.getAskingPrice().compareTo(marketPrice.multiply(FLAG_MULTIPLIER)) > 0){
             listing.setPriceFlagged(true);
         }
+    }
+
+
+
+
+    public ListingImageResponse getImagesForListing(UUID listingId){
+        List<ListingImage> images = listingImageRepository.findByListingId(listingId);
+
+        List<ListingImageDto> imageDtos = images.stream()
+                .map(img -> new ListingImageDto(
+                        img.getId(),
+                        buildUrl(img.getImageKey()),
+                        img.getPosition()))
+                .toList();
+
+        return new ListingImageResponse(imageDtos);
+    }
+
+
+
+
+    private String buildUrl(String imageKey){
+        return cdnBaseUrl + "/" + imageKey;
     }
 
 
