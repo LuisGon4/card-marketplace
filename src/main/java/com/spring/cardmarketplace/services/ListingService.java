@@ -3,7 +3,7 @@ package com.spring.cardmarketplace.services;
 import com.spring.cardmarketplace.auth.CurrentUserProvider;
 import com.spring.cardmarketplace.dto.request.CreateListingRequest;
 import com.spring.cardmarketplace.dto.request.ListingFilter;
-import com.spring.cardmarketplace.dto.request.ListingImageDto;
+import com.spring.cardmarketplace.dto.response.ListingImageDto;
 import com.spring.cardmarketplace.dto.request.UpdateListingRequest;
 import com.spring.cardmarketplace.dto.response.ListingImageResponse;
 import com.spring.cardmarketplace.dto.response.ListingResponse;
@@ -23,7 +23,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
