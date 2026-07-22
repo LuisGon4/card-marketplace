@@ -201,9 +201,8 @@ public class ListingService {
 
 
 
-
     public ListingImageResponse getImagesForListing(UUID listingId){
-        List<ListingImage> images = listingImageRepository.findByListingId(listingId);
+        List<ListingImage> images = listingImageRepository.findByListingIdOrderByPositionAsc(listingId);
 
         List<ListingImageDto> imageDtos = images.stream()
                 .map(img -> new ListingImageDto(

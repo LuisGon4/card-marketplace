@@ -11,5 +11,5 @@ import java.util.UUID;
 public interface ListingImageRepository extends JpaRepository<ListingImage, UUID> {
     long countByListing(Listing listing);
 
-    List<ListingImage> findByListingId(UUID listingId);
+    List<ListingImage> findByListingIdOrderByPositionAsc(UUID listingId);
 }

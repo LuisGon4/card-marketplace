@@ -3,6 +3,7 @@ package com.spring.cardmarketplace.controllers;
 import com.spring.cardmarketplace.dto.request.CreateListingRequest;
 import com.spring.cardmarketplace.dto.request.ListingFilter;
 import com.spring.cardmarketplace.dto.request.UpdateListingRequest;
+import com.spring.cardmarketplace.dto.response.ListingImageResponse;
 import com.spring.cardmarketplace.dto.response.ListingResponse;
 import com.spring.cardmarketplace.services.ListingService;
 import jakarta.validation.Valid;
@@ -29,6 +30,11 @@ public class ListingController {
     @GetMapping("/{id}")
     public ListingResponse getListing(@PathVariable UUID id){
         return listingService.findById(id);
+    }
+
+    @GetMapping("/{listingId}/images")
+    public ListingImageResponse getListingImages(@PathVariable UUID listingId){
+        return listingService.getImagesForListing(listingId);
     }
 
     @PostMapping
