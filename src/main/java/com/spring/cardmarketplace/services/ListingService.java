@@ -201,6 +201,9 @@ public class ListingService {
 
 
     public ListingImageResponse getImagesForListing(UUID listingId){
+        if(!listingRepository.existsById(listingId)){
+            throw new ListingNotFoundException("No listing found with id: " + listingId);
+        }
         List<ListingImage> images = listingImageRepository.findByListingIdOrderByPositionAsc(listingId);
 
         List<ListingImageDto> imageDtos = images.stream()
