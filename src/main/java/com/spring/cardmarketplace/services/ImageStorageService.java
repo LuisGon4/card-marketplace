@@ -26,7 +26,7 @@ import java.util.UUID;
 
 @Service
 public class ImageStorageService {
-    private static final Duration PRESIGN_EXPIRY = Duration.ofMinutes(30);
+    private static final Duration PRESIGN_EXPIRY = Duration.ofMinutes(5);
     private static final long MAX_FILE_SIZE_BYTES = 5_242_880;
     private static final String CONTENT_TYPE_JPEG = "image/jpeg";
     private static final long MAX_NUMBER_OF_IMAGES = 5;
