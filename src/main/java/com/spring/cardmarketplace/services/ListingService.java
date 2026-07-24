@@ -22,6 +22,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -181,25 +182,8 @@ public class ListingService {
         }
 
         List<Listing> listings = listingRepository.findAll(spec);
-        if (listings.isEmpty()) {
-            return List.of();
-        }
 
-        Map<UUID, String> thumbnailKeys = listingImageRepository
-                .findByListingInAndPosition(listings, THUMBNAIL_POSITION)
-                .stream()
-                .collect(Collectors.toMap(
-                        img -> img.getListing().getId(),
-                        ListingImage::getImageKey
-                ));
-
-        return listings.stream()
-                .map(listing -> {
-                    String key = thumbnailKeys.get(listing.getId());
-                    String thumbnailUrl = key == null ? null : buildUrl(key);
-                    return toSummaryResponse(listing, thumbnailUrl);
-                })
-                .toList();
+        return toSummaryResponse(listings);
     }
 
     private void applyMarketPrice(Listing listing, Card card){
@@ -226,6 +210,31 @@ public class ListingService {
 
     private String buildUrl(String imageKey){
         return s3Properties.publicBaseUrl() + "/" + imageKey;
+    }
+
+
+
+
+    private List<ListingSummaryResponse> toSummaryResponse(List<Listing> listings){
+        if(listings.isEmpty()){
+            return List.of();
+        }
+
+        Map<UUID, String> thumbnailKeys = listingImageRepository
+                .findByListingInAndPosition(listings, THUMBNAIL_POSITION)
+                .stream()
+                .collect(Collectors.toMap(
+                        img -> img.getListing().getId(),
+                        ListingImage::getImageKey
+                ));
+
+        return listings.stream()
+                .map(listing ->  {
+                    String key = thumbnailKeys.get(listing.getId());
+                    String thumbnailUrl = key == null ? null : buildUrl(key);
+                    return toSummaryResponse(listing, thumbnailUrl);
+                })
+                .toList();
     }
 
 
