@@ -19,5 +19,6 @@ public record ListingSummaryResponse(
         String description,
         String sellerUsername,
         UUID sellerId,
-        String thumbnailUrl
+        String thumbnailUrl,
+        boolean isActive
 ) {}

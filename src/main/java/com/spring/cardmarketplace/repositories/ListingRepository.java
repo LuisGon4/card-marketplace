@@ -2,6 +2,7 @@ package com.spring.cardmarketplace.repositories;
 
 import com.spring.cardmarketplace.entities.Listing;
 
+import com.spring.cardmarketplace.entities.User;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,8 +19,8 @@ public interface ListingRepository extends JpaRepository<Listing, UUID>,
     List<Listing> findAll(Specification<Listing> spec);
 
     @EntityGraph(attributePaths = {"card", "seller"})
-    Optional<Listing> findByIdAndActiveTrue(UUID id);
+    Optional<Listing> findByIdAndActiveTrue(UUID listingId);
 
     @EntityGraph(attributePaths = {"card", "seller"})
-    List<Listing> findBySellerOrderByCreatedAtDesc(UUID seller);
+    List<Listing> findBySellerOrderByCreatedAtDesc(User seller);
 }

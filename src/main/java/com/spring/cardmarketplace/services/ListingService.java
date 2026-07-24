@@ -22,7 +22,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -122,9 +121,15 @@ public class ListingService {
             listing.setDescription(request.description());
         }
 
+
         Listing updated = listingRepository.save(listing);
 
-        return toSummaryResponse(updated, null);
+        String thumbnailUrl = listingImageRepository
+                .findByListingIdAndPosition(updated.getId(), THUMBNAIL_POSITION)
+                .map(img -> buildUrl(img.getImageKey()))
+                .orElse(null);
+
+        return toSummaryResponse(updated, thumbnailUrl);
     }
 
 
@@ -132,20 +137,19 @@ public class ListingService {
 
 
     public void delete(UUID listingId){
-        Listing listing = listingRepository.findById(listingId).
-                orElseThrow(() -> new ListingNotFoundException(
-                        "No listing found with id: " + listingId
-                ));
-
-        User currentUser = currentUserProvider.getCurrentUser();
-
-        if(!listing.getSeller().getId().equals(currentUser.getId())){
-            throw new ForbiddenOperationException(
-                    "You are not the seller of this listing"
-            );
-        }
+        Listing listing = loadOwnedListing(listingId);
 
         listing.setActive(false);
+
+        listingRepository.save(listing);
+    }
+
+
+
+    public void reactivate(UUID listingId){
+        Listing listing = loadOwnedListing(listingId);
+
+        listing.setActive(true);
 
         listingRepository.save(listing);
     }
@@ -184,6 +188,10 @@ public class ListingService {
         return toSummaryResponse(listingRepository.findAll(spec));
     }
 
+
+
+
+
     private void applyMarketPrice(Listing listing, Card card){
         if(card.getJustTcgId() == null){
             return;
@@ -206,8 +214,39 @@ public class ListingService {
 
 
 
+
+    public List<ListingSummaryResponse> findMine(){
+        return toSummaryResponse(
+                listingRepository.findBySellerOrderByCreatedAtDesc(
+                        currentUserProvider.getCurrentUser()
+                )
+        );
+    }
+
+
+
     private String buildUrl(String imageKey){
         return s3Properties.publicBaseUrl() + "/" + imageKey;
+    }
+
+
+
+
+    private Listing loadOwnedListing(UUID listingId){
+        Listing listing = listingRepository.findById(listingId).
+                orElseThrow(() -> new ListingNotFoundException(
+                        "No listing found with id: " + listingId
+                ));
+
+        User currentUser = currentUserProvider.getCurrentUser();
+
+        if(!listing.getSeller().getId().equals(currentUser.getId())){
+            throw new ForbiddenOperationException(
+                    "You are not the seller of this listing"
+            );
+        }
+
+        return listing;
     }
 
 
@@ -270,7 +309,8 @@ public class ListingService {
                 listing.getDescription(),
                 listing.getSeller().getUsername(),
                 listing.getSeller().getId(),
-                thumbnailUrl
+                thumbnailUrl,
+                listing.isActive()
         );
     }
 }

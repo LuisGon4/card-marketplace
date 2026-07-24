@@ -32,6 +32,11 @@ public class ListingController {
         return listingService.findById(id);
     }
 
+    @GetMapping("/mine")
+    public List<ListingSummaryResponse> getListingsByMine(){
+        return listingService.findMine();
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ListingSummaryResponse createListing(@Valid @RequestBody CreateListingRequest request){
