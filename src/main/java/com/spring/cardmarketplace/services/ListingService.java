@@ -181,9 +181,7 @@ public class ListingService {
             spec = spec.and(ListingSpecifications.priceBelow(filter.maxPrice()));
         }
 
-        List<Listing> listings = listingRepository.findAll(spec);
-
-        return toSummaryResponse(listings);
+        return toSummaryResponse(listingRepository.findAll(spec));
     }
 
     private void applyMarketPrice(Listing listing, Card card){
