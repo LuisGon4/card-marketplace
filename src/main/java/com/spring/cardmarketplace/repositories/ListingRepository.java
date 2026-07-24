@@ -19,4 +19,7 @@ public interface ListingRepository extends JpaRepository<Listing, UUID>,
 
     @EntityGraph(attributePaths = {"card", "seller"})
     Optional<Listing> findByIdAndActiveTrue(UUID id);
+
+    @EntityGraph(attributePaths = {"card", "seller"})
+    List<Listing> findBySellerOrderByCreatedAtDesc(UUID seller);
 }
