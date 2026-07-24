@@ -48,6 +48,12 @@ public class ListingController {
         return listingService.update(id, request);
     }
 
+    @PatchMapping("/{id}/reactivate")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void reactivateListing(@PathVariable UUID id){
+        listingService.reactivate(id);
+    }
+
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteListing(@PathVariable UUID id){
