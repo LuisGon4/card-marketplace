@@ -7,6 +7,7 @@ import com.spring.cardmarketplace.dto.request.ListingFilter;
 import com.spring.cardmarketplace.dto.response.ListingDetailsResponse;
 import com.spring.cardmarketplace.dto.request.UpdateListingRequest;
 import com.spring.cardmarketplace.dto.response.ListingSummaryResponse;
+import com.spring.cardmarketplace.dto.response.PageResponse;
 import com.spring.cardmarketplace.entities.Card;
 import com.spring.cardmarketplace.entities.Listing;
 import com.spring.cardmarketplace.entities.ListingImage;
@@ -18,6 +19,8 @@ import com.spring.cardmarketplace.repositories.CardRepository;
 import com.spring.cardmarketplace.repositories.ListingImageRepository;
 import com.spring.cardmarketplace.repositories.ListingRepository;
 import com.spring.cardmarketplace.repositories.ListingSpecifications;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -158,7 +161,7 @@ public class ListingService {
 
 
 
-    public List<ListingSummaryResponse> findAll(ListingFilter filter){
+    public PageResponse<ListingSummaryResponse> findAll(ListingFilter filter, Pageable pageable){
         Specification<Listing> spec = ListingSpecifications.isActive();
 
         if(filter.cardName() != null){
@@ -185,7 +188,14 @@ public class ListingService {
             spec = spec.and(ListingSpecifications.priceBelow(filter.maxPrice()));
         }
 
-        return toSummaryResponse(listingRepository.findAll(spec));
+        Page<Listing> page = listingRepository.findAll(spec, pageable);
+
+        return new PageResponse<>(
+                toSummaryResponse(page.getContent()),
+                page.hasNext(),
+                page.getTotalElements(),
+                page.getTotalPages()
+        );
     }
 
 
