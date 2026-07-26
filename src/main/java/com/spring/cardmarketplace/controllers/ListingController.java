@@ -5,8 +5,11 @@ import com.spring.cardmarketplace.dto.request.ListingFilter;
 import com.spring.cardmarketplace.dto.request.UpdateListingRequest;
 import com.spring.cardmarketplace.dto.response.ListingDetailsResponse;
 import com.spring.cardmarketplace.dto.response.ListingSummaryResponse;
+import com.spring.cardmarketplace.dto.response.PageResponse;
 import com.spring.cardmarketplace.services.ListingService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,8 +26,9 @@ public class ListingController {
     }
 
     @GetMapping
-    public List<ListingSummaryResponse> getListings(ListingFilter filter){
-        return listingService.findAll(filter);
+    public PageResponse<ListingSummaryResponse> getListings(ListingFilter filter,
+                                                            @PageableDefault(size = 20) Pageable pageable){
+        return listingService.findAll(filter, pageable);
     }
 
     @GetMapping("/{id}")
