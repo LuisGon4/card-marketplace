@@ -37,4 +37,15 @@ public class ListingSpecifications {
     public static Specification<Listing> isActive(){
         return (root, query, cb) -> cb.isTrue(root.get("active"));
     }
+
+
+    public static Specification<Listing> withCardAndSeller() {
+        return ((root, query, criteriaBuilder) -> {
+            if(Long.class != query.getResultType()) {
+                root.fetch("card");
+                root.fetch("seller");
+            }
+            return null;
+        });
+    }
 }

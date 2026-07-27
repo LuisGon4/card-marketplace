@@ -21,6 +21,7 @@ import com.spring.cardmarketplace.repositories.ListingImageRepository;
 import com.spring.cardmarketplace.repositories.ListingRepository;
 import com.spring.cardmarketplace.repositories.ListingSpecifications;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -57,6 +58,7 @@ public class ListingService {
         this.s3Properties = s3Properties;
     }
 
+
     public ListingDetailsResponse findById(UUID listingId){
         Listing listing = listingRepository.findByIdAndActiveTrue(listingId)
                 .orElseThrow(() -> new ListingNotFoundException(
@@ -71,8 +73,6 @@ public class ListingService {
 
         return toDetailResponse(listing, imageUrls);
     }
-
-
 
 
 
@@ -163,9 +163,17 @@ public class ListingService {
 
 
     public PageResponse<ListingSummaryResponse> findAll(ListingFilter filter, Pageable pageable){
+        if (pageable.getSort().isUnsorted()) {
+            pageable = PageRequest.of(
+                    pageable.getPageNumber(),
+                    pageable.getPageSize(),
+                    Sort.by(Sort.Direction.DESC, "createdAt")
+            );
+        }
+
         validateSort(pageable);
 
-        Specification<Listing> spec = ListingSpecifications.isActive();
+        Specification<Listing> spec = ListingSpecifications.isActive().and(ListingSpecifications.withCardAndSeller());
 
         if(filter.cardName() != null){
             spec = spec.and(ListingSpecifications.hasCardName(filter.cardName()));

@@ -14,7 +14,7 @@ import java.util.UUID;
 
 @Controller
 public class ChatController {
-    private static final String TOPIC_DESTINATION = "/topic/conversation";
+    private static final String TOPIC_DESTINATION = "/topic/conversation/";
 
     private final MessageService messageService;
     private final SimpMessagingTemplate simpMessagingTemplate;
