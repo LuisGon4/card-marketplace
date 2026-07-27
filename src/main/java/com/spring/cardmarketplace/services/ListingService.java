@@ -14,6 +14,7 @@ import com.spring.cardmarketplace.entities.ListingImage;
 import com.spring.cardmarketplace.entities.User;
 import com.spring.cardmarketplace.exception.CardNotFoundException;
 import com.spring.cardmarketplace.exception.ForbiddenOperationException;
+import com.spring.cardmarketplace.exception.InvalidSortException;
 import com.spring.cardmarketplace.exception.ListingNotFoundException;
 import com.spring.cardmarketplace.repositories.CardRepository;
 import com.spring.cardmarketplace.repositories.ListingImageRepository;
@@ -21,19 +22,19 @@ import com.spring.cardmarketplace.repositories.ListingRepository;
 import com.spring.cardmarketplace.repositories.ListingSpecifications;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class ListingService {
     private static final BigDecimal FLAG_MULTIPLIER = new BigDecimal("1.5");
     private static final int THUMBNAIL_POSITION = 0;
+    private static final Set<String> allowedSortFields = new HashSet<>(Arrays.asList("createdAt", "askingPrice"));
 
     private final ListingRepository listingRepository;
     private final CardRepository cardRepository;
@@ -162,6 +163,8 @@ public class ListingService {
 
 
     public PageResponse<ListingSummaryResponse> findAll(ListingFilter filter, Pageable pageable){
+        validateSort(pageable);
+
         Specification<Listing> spec = ListingSpecifications.isActive();
 
         if(filter.cardName() != null){
@@ -201,6 +204,26 @@ public class ListingService {
 
 
 
+    public List<ListingSummaryResponse> findMine(){
+        return toSummaryResponse(
+                listingRepository.findBySellerOrderByCreatedAtDesc(
+                        currentUserProvider.getCurrentUser()
+                )
+        );
+    }
+
+
+
+    private void validateSort(Pageable pageable) {
+        for(Sort.Order order : pageable.getSort()){
+            if(!allowedSortFields.contains(order.getProperty())){
+                throw new InvalidSortException(
+                        "Invalid sort field: '" + order.getProperty() + "'. Allowed: " + allowedSortFields);
+            }
+        }
+    }
+
+
 
     private void applyMarketPrice(Listing listing, Card card){
         if(card.getJustTcgId() == null){
@@ -220,17 +243,6 @@ public class ListingService {
         if(listing.getAskingPrice().compareTo(marketPrice.multiply(FLAG_MULTIPLIER)) > 0){
             listing.setPriceFlagged(true);
         }
-    }
-
-
-
-
-    public List<ListingSummaryResponse> findMine(){
-        return toSummaryResponse(
-                listingRepository.findBySellerOrderByCreatedAtDesc(
-                        currentUserProvider.getCurrentUser()
-                )
-        );
     }
 
 
@@ -278,7 +290,7 @@ public class ListingService {
         return listings.stream()
                 .map(listing ->  {
                     String key = thumbnailKeys.get(listing.getId());
-                    String thumbnailUrl = key == null ? null : buildUrl(key);
+                    String thumbnailUrl = (key == null) ? null : buildUrl(key);
                     return toSummaryResponse(listing, thumbnailUrl);
                 })
                 .toList();

@@ -104,4 +104,12 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(message);
     }
+
+
+    @ExceptionHandler(InvalidSortException.class)
+    public ResponseEntity<String> handleInvalidSortException(InvalidSortException ex){
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ex.getMessage());
+    }
 }
