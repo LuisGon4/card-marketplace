@@ -6,8 +6,9 @@ import org.springframework.data.jpa.domain.Specification;
 import java.math.BigDecimal;
 
 public class ListingSpecifications {
-    public static Specification<Listing> hasCardName(String cardName){
-        return (root, query, cb) -> cb.equal(root.join("card").get("cardName"), cardName);
+    public static Specification<Listing> hasCardName(String cardName) {
+        return (root, query, cb) ->
+                cb.like(cb.lower(root.join("card").get("cardName")), "%" + cardName.toLowerCase() + "%");
     }
 
     public static Specification<Listing> hasSetName(String setName){
