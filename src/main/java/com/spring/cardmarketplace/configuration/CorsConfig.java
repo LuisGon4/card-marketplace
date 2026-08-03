@@ -10,7 +10,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.List;
 
 @Configuration
-@Profile("dev")
 public class CorsConfig {
     private static final String FRONTEND_ORIGIN = "http://localhost:5173";
 

@@ -13,6 +13,8 @@ import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 @Configuration
 @Profile("!dev")
 public class SecurityConfig {
+    private static final String DEFAULT_SUCCESS_URL = "http://localhost:5173";
+
     private final OidcUserService customOidcUserService;
 
     public SecurityConfig(OidcUserService customOidcUserService) {
@@ -35,7 +37,8 @@ public class SecurityConfig {
                 // OAuth2 Login
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(userInfo -> userInfo
-                                .oidcUserService(customOidcUserService)))
+                                .oidcUserService(customOidcUserService))
+                        .defaultSuccessUrl(DEFAULT_SUCCESS_URL, true))
                 .csrf(csrf -> {
                     CsrfTokenRequestAttributeHandler requestHandler = new CsrfTokenRequestAttributeHandler();
                     requestHandler.setCsrfRequestAttributeName(null);

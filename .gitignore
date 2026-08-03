@@ -37,3 +37,4 @@ out/
 .vscode/
 .env
 scratch/
+src/main/resources/static/stomp-client.html
