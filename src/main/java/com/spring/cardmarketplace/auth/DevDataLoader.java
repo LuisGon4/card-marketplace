@@ -5,9 +5,11 @@ import com.spring.cardmarketplace.entities.User;
 import com.spring.cardmarketplace.repositories.CardRepository;
 import com.spring.cardmarketplace.repositories.UserRepository;
 import jakarta.annotation.PostConstruct;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
+@Profile("dev")
 public class DevDataLoader {
     private final UserRepository userRepository;
     private final CardRepository cardRepository;
