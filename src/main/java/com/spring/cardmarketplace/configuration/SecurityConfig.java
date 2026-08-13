@@ -26,7 +26,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
                         // Public reads
-                        .requestMatchers(HttpMethod.GET, "/api/listings/**", "/api/cards/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/listings/**", "/api/cards/**", "/health").permitAll()
                         // Auth endpoints
                         .requestMatchers("/oauth2/**", "/login/**").permitAll()
                         // Dev endpoints

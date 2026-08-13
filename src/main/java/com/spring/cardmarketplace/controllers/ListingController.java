@@ -27,7 +27,7 @@ public class ListingController {
 
     @GetMapping
     public PageResponse<ListingSummaryResponse> getListings(ListingFilter filter,
-                                                            @PageableDefault(size = 20) Pageable pageable){
+                                                            @PageableDefault(size = 21) Pageable pageable){
         return listingService.findAll(filter, pageable);
     }
 
