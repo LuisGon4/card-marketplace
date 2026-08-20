@@ -1,6 +1,8 @@
 package com.spring.cardmarketplace.services;
 
+import com.spring.cardmarketplace.client.TcgDexClient;
 import com.spring.cardmarketplace.dto.tcgdex.SetBrief;
+import com.spring.cardmarketplace.dto.tcgdex.SetData;
 import com.spring.cardmarketplace.repositories.CardRepository;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -11,10 +13,10 @@ import java.util.List;
 @Profile("seed")
 @Service
 public class CatalogSeedService {
-    private final CardRepository cardRepository;
+    private final TcgDexClient tcgDexClient;
 
-    public CatalogSeedService(CardRepository cardRepository) {
-        this.cardRepository = cardRepository;
+    public CatalogSeedService(TcgDexClient tcgDexClient) {
+        this.tcgDexClient = tcgDexClient;
     }
 
     public void seedCatalog() {
