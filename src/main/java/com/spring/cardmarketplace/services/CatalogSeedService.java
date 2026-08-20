@@ -1,10 +1,12 @@
 package com.spring.cardmarketplace.services;
 
+import com.spring.cardmarketplace.dto.tcgdex.SetBrief;
 import com.spring.cardmarketplace.repositories.CardRepository;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Profile("seed")
 @Service
