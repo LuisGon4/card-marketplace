@@ -3,6 +3,7 @@ package com.spring.cardmarketplace.services;
 import com.spring.cardmarketplace.client.TcgDexClient;
 import com.spring.cardmarketplace.dto.tcgdex.SetBrief;
 import com.spring.cardmarketplace.dto.tcgdex.SetData;
+import com.spring.cardmarketplace.dto.tcgdex.SetResult;
 import com.spring.cardmarketplace.repositories.CardRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,9 +19,11 @@ public class CatalogSeedService {
     private static final Logger log = LoggerFactory.getLogger(CatalogSeedService.class);
 
     private final TcgDexClient tcgDexClient;
+    private final SetSeeder setSeeder;
 
-    public CatalogSeedService(TcgDexClient tcgDexClient) {
+    public CatalogSeedService(TcgDexClient tcgDexClient, SetSeeder setSeeder) {
         this.tcgDexClient = tcgDexClient;
+        this.setSeeder = setSeeder;
     }
 
     public boolean seedCatalog() {
