@@ -29,7 +29,7 @@ public class RestClientConfig {
     }
 
     @Bean
-    public RestClient tcgDexClient(){
+    public RestClient tcgDexRestClient(){
         return RestClient.builder()
                 .baseUrl(tcgDexBaseUrl)
                 .build();

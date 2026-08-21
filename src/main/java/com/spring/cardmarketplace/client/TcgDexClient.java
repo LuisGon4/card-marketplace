@@ -13,21 +13,21 @@ import java.util.List;
 @Profile("seed")
 @Component
 public class TcgDexClient {
-    private final RestClient tcgDexClient;
+    private final RestClient tcgDexRestClient;
 
-    public TcgDexClient(@Qualifier("tcgDexClient") RestClient tcgDexClient) {
-        this.tcgDexClient = tcgDexClient;
+    public TcgDexClient(@Qualifier("tcgDexRestClient") RestClient tcgDexRestClient) {
+        this.tcgDexRestClient = tcgDexRestClient;
     }
 
     public List<SetBrief> fetchAllSets(){
-        return tcgDexClient.get()
+        return tcgDexRestClient.get()
                 .uri("/sets")
                 .retrieve()
                 .body(new ParameterizedTypeReference<List<SetBrief>>() {});
     }
 
     public SetData fetchSetDetails(String setId){
-        return tcgDexClient.get()
+        return tcgDexRestClient.get()
                 .uri("/sets/{id}", setId)
                 .retrieve()
                 .body(SetData.class);
