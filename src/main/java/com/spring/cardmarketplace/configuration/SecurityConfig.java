@@ -13,7 +13,7 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 
 @Configuration
-@Profile("!dev")
+@Profile("!dev & !seed")
 public class SecurityConfig {
     @Value("${app.frontend-url}")
     private String frontendUrl;
