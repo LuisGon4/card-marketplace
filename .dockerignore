@@ -4,3 +4,5 @@ build
 .env
 scratch
 *.md
+
+src/main/resources/static/stomp-client.html

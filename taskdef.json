@@ -1,0 +1,142 @@
+{
+    "taskDefinitionArn": "arn:aws:ecs:us-west-2:323668150901:task-definition/card-marketplace:3",
+    "containerDefinitions": [
+        {
+            "name": "card-marketplace",
+            "image": "323668150901.dkr.ecr.us-west-2.amazonaws.com/card-marketplace:latest",
+            "cpu": 0,
+            "portMappings": [
+                {
+                    "containerPort": 8080,
+                    "hostPort": 8080,
+                    "protocol": "tcp"
+                }
+            ],
+            "essential": true,
+            "environment": [
+                {
+                    "name": "AWS_S3_REGION",
+                    "value": "us-west-2"
+                },
+                {
+                    "name": "POSTGRES_DATASOURCE_URL",
+                    "value": "jdbc:postgresql://card-marketplace-db.c9k2ws2kgjvd.us-west-2.rds.amazonaws.com:5432/card_marketplace"
+                },
+                {
+                    "name": "AWS_S3_BUCKET",
+                    "value": "card-marketplace-images-bucket"
+                },
+                {
+                    "name": "APP_FRONTEND_URL",
+                    "value": "https://placeholder.example.com"
+                },
+                {
+                    "name": "SPRING_PROFILES_ACTIVE",
+                    "value": "prod"
+                },
+                {
+                    "name": "SPRING_DATA_REDIS_HOST",
+                    "value": "master.card-marketplace-cache.x3bam2.usw2.cache.amazonaws.com"
+                },
+                {
+                    "name": "AWS_CLOUDFRONT_URL",
+                    "value": "dpatg1ubz19cg.cloudfront.net"
+                },
+                {
+                    "name": "SPRING_DATA_REDIS_PORT",
+                    "value": "6379"
+                }
+            ],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "secrets": [
+                {
+                    "name": "POSTGRES_NAME",
+                    "valueFrom": "arn:aws:secretsmanager:us-west-2:323668150901:secret:card-marketplace/prod-9qbwpL:POSTGRES_NAME::"
+                },
+                {
+                    "name": "POSTGRES_PASSWORD",
+                    "valueFrom": "arn:aws:secretsmanager:us-west-2:323668150901:secret:card-marketplace/prod-9qbwpL:POSTGRES_PASSWORD::"
+                },
+                {
+                    "name": "SPRING_DATA_REDIS_PASSWORD",
+                    "valueFrom": "arn:aws:secretsmanager:us-west-2:323668150901:secret:card-marketplace/prod-9qbwpL:SPRING_DATA_REDIS_PASSWORD::"
+                },
+                {
+                    "name": "JUSTTCG_API_KEY",
+                    "valueFrom": "arn:aws:secretsmanager:us-west-2:323668150901:secret:card-marketplace/prod-9qbwpL:JUSTTCG_API_KEY::"
+                },
+                {
+                    "name": "GOOGLE_CLIENT_ID",
+                    "valueFrom": "arn:aws:secretsmanager:us-west-2:323668150901:secret:card-marketplace/prod-9qbwpL:GOOGLE_CLIENT_ID::"
+                },
+                {
+                    "name": "GOOGLE_CLIENT_SECRET",
+                    "valueFrom": "arn:aws:secretsmanager:us-west-2:323668150901:secret:card-marketplace/prod-9qbwpL:GOOGLE_CLIENT_SECRET::"
+                }
+            ],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/ecs/card-marketplace",
+                    "awslogs-region": "us-west-2",
+                    "awslogs-stream-prefix": "ecs"
+                }
+            },
+            "systemControls": []
+        }
+    ],
+    "family": "card-marketplace",
+    "taskRoleArn": "arn:aws:iam::323668150901:role/card-marketplace-ecs-task-role",
+    "executionRoleArn": "arn:aws:iam::323668150901:role/card-marketplace-ecs-execution-role",
+    "networkMode": "awsvpc",
+    "revision": 3,
+    "volumes": [],
+    "status": "ACTIVE",
+    "requiresAttributes": [
+        {
+            "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
+        },
+        {
+            "name": "ecs.capability.execution-role-awslogs"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.ecr-auth"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
+        },
+        {
+            "name": "ecs.capability.secrets.asm.environment-variables"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.task-iam-role"
+        },
+        {
+            "name": "ecs.capability.execution-role-ecr-pull"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
+        },
+        {
+            "name": "ecs.capability.task-eni"
+        }
+    ],
+    "placementConstraints": [],
+    "compatibilities": [
+        "EC2",
+        "MANAGED_INSTANCES",
+        "FARGATE"
+    ],
+    "runtimePlatform": {
+        "cpuArchitecture": "ARM64",
+        "operatingSystemFamily": "LINUX"
+    },
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "512",
+    "memory": "1024",
+    "registeredAt": "2026-08-19T12:10:07.544000-07:00",
+    "registeredBy": "arn:aws:iam::323668150901:root"
+}
