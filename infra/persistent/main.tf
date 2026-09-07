@@ -71,7 +71,6 @@ resource "aws_cloudfront_origin_access_control" "images" {
 
 resource "aws_cloudfront_distribution" "images" {
   aliases             = []
-  anycast_ip_list_id  = null
   comment             = null
   default_root_object = null
   enabled             = true
