@@ -3,15 +3,15 @@ terraform {
 
   required_providers {
     aws = {
-      source = "hashicorp/aws"
+      source  = "hashicorp/aws"
       version = "~> 6.0"
     }
   }
 
   backend "s3" {
-    bucket = "cardslocal-tfstate-b4a8"
-    key = "persistent/terraform.tfstate"
-    region = "us-west-2"
+    bucket       = "cardslocal-tfstate-b4a8"
+    key          = "persistent/terraform.tfstate"
+    region       = "us-west-2"
     use_lockfile = true
   }
 }
