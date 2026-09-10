@@ -3,6 +3,21 @@ data "aws_route53_zone" "main" {
   name = "cardslocal.com"
 }
 
+data "aws_vpc" "default" {
+  default = true
+}
+
+data "aws_subnets" "default" {
+  filter {
+    name = "vpc-id"
+    values = [data.aws_vpc.default.id]
+  }
+}
+
+data "aws_db_subnet_group" "main" {
+  name = "default-vpc-00c8e1d6f3022c34d"
+}
+
 resource "aws_s3_bucket" "images" {
   bucket = "card-marketplace-images-bucket"
 }
@@ -123,5 +138,15 @@ resource "aws_cloudfront_distribution" "images" {
     iam_certificate_id             = null
     minimum_protocol_version       = "TLSv1"
     ssl_support_method             = null
+  }
+}
+
+
+resource "aws_acm_certificate" "api" {
+  domain_name       = "api.cardslocal.com"
+  validation_method = "DNS"
+
+  lifecycle {
+    create_before_destroy = true
   }
 }
