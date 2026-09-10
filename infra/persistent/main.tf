@@ -150,3 +150,28 @@ resource "aws_acm_certificate" "api" {
     create_before_destroy = true
   }
 }
+
+resource "aws_security_group" "rds" {
+  name        = "rds-sg"
+  description = "Created by RDS management console"
+  vpc_id      = data.aws_vpc.default.id
+  tags        = {
+    Name = "rds-sg"
+  }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "rds_postgres" {
+  security_group_id = aws_security_group.rds.id
+
+  cidr_ipv4   = "69.181.139.3/32"
+  from_port   = 5432
+  to_port     = 5432
+  ip_protocol = "tcp"
+}
+
+resource "aws_vpc_security_group_egress_rule" "rds_all" {
+  security_group_id = aws_security_group.rds.id
+
+  cidr_ipv4 = "0.0.0.0/0"
+  ip_protocol       = "-1"
+}
