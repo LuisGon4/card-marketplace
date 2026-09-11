@@ -175,3 +175,39 @@ resource "aws_vpc_security_group_egress_rule" "rds_all" {
   cidr_ipv4 = "0.0.0.0/0"
   ip_protocol       = "-1"
 }
+
+resource "aws_db_instance" "db" {
+  db_name  = "card_marketplace"
+  username = "cardmarketplace"
+
+  instance_class = "db.t4g.micro"
+  engine = "postgres"
+  engine_version = "15.18"
+
+  storage_type = "gp3"
+  allocated_storage = 20
+
+  db_subnet_group_name   = data.aws_db_subnet_group.main.name
+  vpc_security_group_ids = [aws_security_group.rds.id]
+  publicly_accessible    = false
+  port                   = 5432
+  multi_az               = false
+
+  backup_retention_period    = 7
+  backup_window              = "07:50-08:20"
+  maintenance_window         = "thu:13:17-thu:13:47"
+  auto_minor_version_upgrade = true
+  deletion_protection        = true
+
+  performance_insights_enabled          = true
+  performance_insights_retention_period = 7
+  monitoring_interval                    = 0  # Enhanced monitoring off
+
+  storage_encrypted = true # kms_key_id omitted — Optional+Computed, using AWS-managed default
+
+  skip_final_snapshot                 = false
+  final_snapshot_identifier           = "card-marketplace-db-final"  # required when skip_final_snapshot = false — see below
+  copy_tags_to_snapshot               = false
+  iam_database_authentication_enabled = false
+  apply_immediately                   = true
+}
