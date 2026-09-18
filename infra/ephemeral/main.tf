@@ -1,3 +1,5 @@
+data "aws_caller_identity" "current" {}
+
 data "aws_vpc" "default" {
   default = true
 }
@@ -9,6 +11,18 @@ data "terraform_remote_state" "persistent" {
     key          = "persistent/terraform.tfstate"
     region       = "us-west-2"
   }
+}
+
+data "aws_iam_role" "execution" {
+  name = "card-marketplace-ecs-execution-role"
+}
+
+data "aws_iam_role" "task" {
+  name = "card-marketplace-ecs-task-role"
+}
+
+data "aws_cloudwatch_log_group" "app" {
+  name = "/ecs/card-marketplace"
 }
 
 resource "aws_vpc_security_group_ingress_rule" "rds_from_ecs" {
