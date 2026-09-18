@@ -1,5 +1,7 @@
 data "aws_caller_identity" "current" {}
 
+data "aws_region" "current" {}
+
 data "aws_vpc" "default" {
   default = true
 }
@@ -120,4 +122,15 @@ resource "aws_vpc_security_group_ingress_rule" "elasticache_in" {
   from_port                    = 6379
   to_port                      = 6379
   ip_protocol                  = "tcp"
+}
+
+resource "aws_ecs_task_definition" "app" {
+  family = "card-marketplace"
+  requires_compatibilities = ["FARGATE"]
+  network_mode = "awsvpc"
+  cpu = "512"
+  memory = "1024"
+  execution_role_arn = data.aws_iam_role.execution.arn
+  task_role_arn = data.aws_iam_role.task.arn
+  container_definitions = jsonencode([...])
 }
