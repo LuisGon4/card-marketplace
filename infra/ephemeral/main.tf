@@ -205,3 +205,16 @@ resource "aws_ecs_service" "app" {
     container_port   = 8080
   }
 }
+
+resource "aws_ecs_cluster" "main" {
+  name = "card-marketplace"
+
+  tags = {
+    Name = "card-marketplace-cluster"
+  }
+}
+
+resource "aws_ecs_cluster_capacity_providers" "main" {
+  cluster_name = aws_ecs_cluster.main.arn
+  capacity_providers = ["FARGATE"]
+}
