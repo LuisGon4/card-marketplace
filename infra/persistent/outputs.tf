@@ -5,3 +5,11 @@ output "rds_sg_id" {
 output "certificate_arn" {
   value = aws_acm_certificate.api.arn
 }
+
+output "rds_endpoint" {
+  value = aws_db_instance.db.endpoint
+}
+
+output "cloudfront_domain" {
+  value = aws_cloudfront_distribution.images.domain_name
+}
