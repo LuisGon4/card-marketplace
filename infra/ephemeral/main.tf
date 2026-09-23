@@ -162,13 +162,13 @@ resource "aws_ecs_task_definition" "app" {
       ]
       environment = [
         { name = "APP_FRONTEND_URL", value = "https://app.cardslocal.com" },
-        { name = "POSTGRES_DATASOURCE_URL", value = "..." },
+        { name = "POSTGRES_DATASOURCE_URL", value = data.terraform_remote_state.persistent.outputs.rds_endpoint },
         { name = "SPRING_DATA_REDIS_HOST", value = "..." },
         { name = "SPRING_DATA_REDIS_PORT", value = "6379" },
-        { name = "JUSTTCG_BASE_URL", value = "..." },
+        { name = "JUSTTCG_BASE_URL", value = "https://api.justtcg.com/v1" },
         { name = "AWS_S3_REGION", value = data.aws_region.current.name },
-        { name = "AWS_S3_BUCKET", value = "card-marketplace-images-bucket" },
-        { name = "AWS_CLOUDFRONT_URL", value = "..." },
+        { name = "AWS_S3_BUCKET", value = data.terraform_remote_state.persistent.outputs.images_bucket_name },
+        { name = "AWS_CLOUDFRONT_URL", value = data.terraform_remote_state.persistent.outputs.cloudfront_domain },
         { name = "SPRING_PROFILES_ACTIVE", value = "prod, seed" },
       ]
 
