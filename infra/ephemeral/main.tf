@@ -215,6 +215,53 @@ resource "aws_ecs_cluster" "main" {
 }
 
 resource "aws_ecs_cluster_capacity_providers" "main" {
-  cluster_name = aws_ecs_cluster.main.arn
+  cluster_name       = aws_ecs_cluster.main.arn
   capacity_providers = ["FARGATE"]
+}
+
+resource "aws_alb" "app" {
+  name               = "card-marketplace-alb"
+  internal           = false
+  load_balancer_type = "application"
+  security_groups    = [aws_security_group.alb.id]
+  subnets            = []
+
+  tags = {
+    Name = "card-marketplace-alb"
+  }
+}
+
+resource "aws_alb_target_group" "app" {
+  name        = "card-marketplace-tg"
+  port        = 8080
+  protocol    = "HTTP"
+  target_type = "ip"
+  vpc_id      = data.aws_vpc.default.id
+
+  health_check {
+    path                = "/health"
+    protocol            = "HTTP"
+    matcher             = "200"
+    interval            = 30
+    timeout             = 5
+    healthy_threshold   = 2
+    unhealthy_threshold = 3
+  }
+
+  tags = {
+    Name = "card-marketplace-tg"
+  }
+}
+
+resource "aws_lb_listener" "https" {
+  load_balancer_arn = aws_alb.app.arn
+  port              = 443
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+  certificate_arn   = data.terraform_remote_state.persistent.outputs.certificate_arn
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_alb_target_group.app.arn
+  }
 }
