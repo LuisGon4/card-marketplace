@@ -31,6 +31,13 @@ data "aws_cloudwatch_log_group" "app" {
   name = "/ecs/card-marketplace"
 }
 
+data "aws_subnets" "default" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.default.id]
+  }
+}
+
 resource "aws_vpc_security_group_ingress_rule" "rds_from_ecs" {
   security_group_id            = data.terraform_remote_state.persistent.outputs.rds_sg_id
   referenced_security_group_id = aws_security_group.ecs.id
@@ -194,7 +201,7 @@ resource "aws_ecs_service" "app" {
   launch_type     = "FARGATE"
 
   network_configuration {
-    subnets          = []
+    subnets          = [data.aws_subnets.default.ids]
     security_groups  = [aws_security_group.ecs.id]
     assign_public_ip = true
   }
@@ -224,7 +231,7 @@ resource "aws_alb" "app" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb.id]
-  subnets            = []
+  subnets            = [data.aws_subnets.default.ids]
 
   tags = {
     Name = "card-marketplace-alb"
