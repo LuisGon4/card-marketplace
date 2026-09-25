@@ -163,7 +163,7 @@ resource "aws_ecs_task_definition" "app" {
       environment = [
         { name = "APP_FRONTEND_URL", value = "https://app.cardslocal.com" },
         { name = "POSTGRES_DATASOURCE_URL", value = data.terraform_remote_state.persistent.outputs.rds_endpoint },
-        { name = "SPRING_DATA_REDIS_HOST", value = "..." },
+        { name = "SPRING_DATA_REDIS_HOST", value = aws_elasticache_replication_group.app.primary_endpoint_address },
         { name = "SPRING_DATA_REDIS_PORT", value = "6379" },
         { name = "JUSTTCG_BASE_URL", value = "https://api.justtcg.com/v1" },
         { name = "AWS_S3_REGION", value = data.aws_region.current.name },
@@ -195,13 +195,13 @@ resource "aws_ecs_task_definition" "app" {
 
 resource "aws_ecs_service" "app" {
   name            = "card-marketplace"
-  cluster         = ""
+  cluster         = aws_ecs_cluster.main.arn
   task_definition = aws_ecs_task_definition.app.arn
   desired_count   = 1
   launch_type     = "FARGATE"
 
   network_configuration {
-    subnets          = [data.aws_subnets.default.ids]
+    subnets          = data.aws_subnets.default.ids
     security_groups  = [aws_security_group.ecs.id]
     assign_public_ip = true
   }
@@ -222,7 +222,7 @@ resource "aws_ecs_cluster" "main" {
 }
 
 resource "aws_ecs_cluster_capacity_providers" "main" {
-  cluster_name       = aws_ecs_cluster.main.arn
+  cluster_name       = aws_ecs_cluster.main.name
   capacity_providers = ["FARGATE"]
 }
 
@@ -231,7 +231,7 @@ resource "aws_alb" "app" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb.id]
-  subnets            = [data.aws_subnets.default.ids]
+  subnets            = data.aws_subnets.default.ids
 
   tags = {
     Name = "card-marketplace-alb"
@@ -270,5 +270,26 @@ resource "aws_lb_listener" "https" {
   default_action {
     type             = "forward"
     target_group_arn = aws_alb_target_group.app.arn
+  }
+}
+
+resource "aws_elasticache_subnet_group" "app" {
+  name       = "card-marketplace-cache-subnet"
+  subnet_ids = data.aws_subnets.default.ids
+}
+
+resource "aws_elasticache_replication_group" "app" {
+  replication_group_id = "card-marketplace-cache"
+  description          = "Cards Local Valkey Cache"
+  engine               = "valkey"
+  engine_version       = "9.0"
+  node_type            = "cache.t4g.micro"
+  num_cache_clusters   = 1
+  port                 = 6379
+  subnet_group_name    = aws_elasticache_subnet_group.app.name
+  security_group_ids   = [aws_security_group.elasticache.id]
+
+  tags = {
+    Name = "card-marketplace-cache"
   }
 }
