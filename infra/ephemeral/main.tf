@@ -151,7 +151,7 @@ resource "aws_ecs_task_definition" "app" {
   container_definitions = jsonencode([
     {
       name      = "card-marketplace",
-      image     = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${data.aws_region.current.name}.amazonaws.com/card-marketplace:${var.image_tag}"
+      image     = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${data.aws_region.current.region}.amazonaws.com/card-marketplace:${var.image_tag}"
       essential = true
       portMappings = [
         {
@@ -166,7 +166,7 @@ resource "aws_ecs_task_definition" "app" {
         { name = "SPRING_DATA_REDIS_HOST", value = aws_elasticache_replication_group.app.primary_endpoint_address },
         { name = "SPRING_DATA_REDIS_PORT", value = "6379" },
         { name = "JUSTTCG_BASE_URL", value = "https://api.justtcg.com/v1" },
-        { name = "AWS_S3_REGION", value = data.aws_region.current.name },
+        { name = "AWS_S3_REGION", value = data.aws_region.current.region },
         { name = "AWS_S3_BUCKET", value = data.terraform_remote_state.persistent.outputs.images_bucket_name },
         { name = "AWS_CLOUDFRONT_URL", value = data.terraform_remote_state.persistent.outputs.cloudfront_domain },
         { name = "SPRING_PROFILES_ACTIVE", value = "prod, seed" },
@@ -185,7 +185,7 @@ resource "aws_ecs_task_definition" "app" {
         logDriver = "awslogs"
         options = {
           "awslogs-group"         = data.aws_cloudwatch_log_group.app.name
-          "awslogs-region"        = data.aws_region.current.name
+          "awslogs-region"        = data.aws_region.current.region
           "awslogs-stream-prefix" = "ecs"
         }
       }
@@ -207,7 +207,7 @@ resource "aws_ecs_service" "app" {
   }
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.app.arn
+    target_group_arn = aws_alb_target_group.app.arn
     container_name   = "card-marketplace"
     container_port   = 8080
   }
