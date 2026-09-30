@@ -9,6 +9,9 @@ data "aws_vpc" "default" {
 data "aws_secretsmanager_secret" "app" {
   name = "card-marketplace/prod"
 }
+data "aws_secretsmanager_secret_version" "app" {
+  secret_id = data.aws_secretsmanager_secret.app.id
+}
 
 data "terraform_remote_state" "persistent" {
   backend = "s3"
@@ -303,15 +306,19 @@ resource "aws_lb_listener" "http" {
 }
 
 resource "aws_elasticache_replication_group" "app" {
-  replication_group_id = "card-marketplace-cache"
-  description          = "Cards Local Valkey Cache"
-  engine               = "valkey"
-  engine_version       = "9.0"
-  node_type            = "cache.t4g.micro"
-  num_cache_clusters   = 1
-  port                 = 6379
-  subnet_group_name    = aws_elasticache_subnet_group.app.name
-  security_group_ids   = [aws_security_group.elasticache.id]
+  replication_group_id       = "card-marketplace-cache"
+  description                = "Cards Local Valkey Cache"
+  engine                     = "valkey"
+  engine_version             = "9.0"
+  node_type                  = "cache.t4g.micro"
+  num_cache_clusters         = 1
+  port                       = 6379
+  subnet_group_name          = aws_elasticache_subnet_group.app.name
+  security_group_ids         = [aws_security_group.elasticache.id]
+  transit_encryption_mode    = "required"
+  transit_encryption_enabled = true
+  auth_token                 = jsondecode(data.aws_secretsmanager_secret_version.app.secret_string)["SPRING_DATA_REDIS_PASSWORD"]
+  apply_immediately          = true
 
   tags = {
     Name = "card-marketplace-cache"
