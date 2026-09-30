@@ -9,7 +9,7 @@ data "aws_vpc" "default" {
 
 data "aws_subnets" "default" {
   filter {
-    name = "vpc-id"
+    name   = "vpc-id"
     values = [data.aws_vpc.default.id]
   }
 }
@@ -155,7 +155,7 @@ resource "aws_security_group" "rds" {
   name        = "rds-sg"
   description = "Created by RDS management console"
   vpc_id      = data.aws_vpc.default.id
-  tags        = {
+  tags = {
     Name = "rds-sg"
   }
 }
@@ -172,8 +172,8 @@ resource "aws_vpc_security_group_ingress_rule" "rds_postgres" {
 resource "aws_vpc_security_group_egress_rule" "rds_all" {
   security_group_id = aws_security_group.rds.id
 
-  cidr_ipv4 = "0.0.0.0/0"
-  ip_protocol       = "-1"
+  cidr_ipv4   = "0.0.0.0/0"
+  ip_protocol = "-1"
 }
 
 resource "aws_db_instance" "db" {
@@ -181,10 +181,10 @@ resource "aws_db_instance" "db" {
   username = "cardmarketplace"
 
   instance_class = "db.t4g.micro"
-  engine = "postgres"
+  engine         = "postgres"
   engine_version = "15.18"
 
-  storage_type = "gp3"
+  storage_type      = "gp3"
   allocated_storage = 20
 
   db_subnet_group_name   = data.aws_db_subnet_group.main.name
@@ -201,12 +201,12 @@ resource "aws_db_instance" "db" {
 
   performance_insights_enabled          = true
   performance_insights_retention_period = 7
-  monitoring_interval                    = 0  # Enhanced monitoring off
+  monitoring_interval                   = 0 # Enhanced monitoring off
 
   storage_encrypted = true # kms_key_id omitted — Optional+Computed, using AWS-managed default
 
   skip_final_snapshot                 = false
-  final_snapshot_identifier           = "card-marketplace-db-final"  # required when skip_final_snapshot = false — see below
+  final_snapshot_identifier           = "card-marketplace-db-final" # required when skip_final_snapshot = false — see below
   copy_tags_to_snapshot               = false
   iam_database_authentication_enabled = false
   apply_immediately                   = true

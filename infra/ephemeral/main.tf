@@ -162,7 +162,7 @@ resource "aws_ecs_task_definition" "app" {
       ]
       environment = [
         { name = "APP_FRONTEND_URL", value = "https://app.cardslocal.com" },
-        { name = "POSTGRES_DATASOURCE_URL", value = data.terraform_remote_state.persistent.outputs.rds_endpoint },
+        { name = "POSTGRES_DATASOURCE_URL", value = "jdbc:postgresql://${data.terraform_remote_state.persistent.outputs.rds_endpoint}/${data.terraform_remote_state.persistent.outputs.db_name}" },
         { name = "SPRING_DATA_REDIS_HOST", value = aws_elasticache_replication_group.app.primary_endpoint_address },
         { name = "SPRING_DATA_REDIS_PORT", value = "6379" },
         { name = "JUSTTCG_BASE_URL", value = "https://api.justtcg.com/v1" },
@@ -226,6 +226,11 @@ resource "aws_ecs_cluster_capacity_providers" "main" {
   capacity_providers = ["FARGATE"]
 }
 
+resource "aws_elasticache_subnet_group" "app" {
+  name       = "card-marketplace-cache-subnet"
+  subnet_ids = data.aws_subnets.default.ids
+}
+
 resource "aws_alb" "app" {
   name               = "card-marketplace-alb"
   internal           = false
@@ -271,11 +276,6 @@ resource "aws_lb_listener" "https" {
     type             = "forward"
     target_group_arn = aws_alb_target_group.app.arn
   }
-}
-
-resource "aws_elasticache_subnet_group" "app" {
-  name       = "card-marketplace-cache-subnet"
-  subnet_ids = data.aws_subnets.default.ids
 }
 
 resource "aws_elasticache_replication_group" "app" {

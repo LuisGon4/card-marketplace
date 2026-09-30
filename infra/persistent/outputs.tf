@@ -17,3 +17,11 @@ output "cloudfront_domain" {
 output "images_bucket_name" {
   value = aws_s3_bucket.images.bucket
 }
+
+output "db_name" {
+  value = aws_db_instance.db.db_name
+}
+
+output "hosted_zone_id" {
+  value = data.aws_route53_zone.main.zone_id
+}
