@@ -177,7 +177,7 @@ resource "aws_ecs_task_definition" "app" {
         { name = "AWS_S3_REGION", value = data.aws_region.current.region },
         { name = "AWS_S3_BUCKET", value = data.terraform_remote_state.persistent.outputs.images_bucket_name },
         { name = "AWS_CLOUDFRONT_URL", value = data.terraform_remote_state.persistent.outputs.cloudfront_domain },
-        { name = "SPRING_PROFILES_ACTIVE", value = "prod, seed" },
+        { name = "SPRING_PROFILES_ACTIVE", value = "prod" },
       ]
 
       secrets = [
