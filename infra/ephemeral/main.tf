@@ -64,6 +64,15 @@ resource "aws_vpc_security_group_ingress_rule" "alb_in" {
   ip_protocol = "tcp"
 }
 
+resource "aws_vpc_security_group_ingress_rule" "alb_http_in" {
+  security_group_id = aws_security_group.alb.id
+
+  from_port   = 80
+  to_port     = 80
+  cidr_ipv4   = "0.0.0.0/0"
+  ip_protocol = "tcp"
+}
+
 resource "aws_vpc_security_group_egress_rule" "alb_out" {
   security_group_id            = aws_security_group.alb.id
   referenced_security_group_id = aws_security_group.ecs.id
@@ -71,7 +80,6 @@ resource "aws_vpc_security_group_egress_rule" "alb_out" {
   from_port   = 8080
   to_port     = 8080
   ip_protocol = "tcp"
-
 }
 
 resource "aws_security_group" "ecs" {
@@ -275,6 +283,22 @@ resource "aws_lb_listener" "https" {
   default_action {
     type             = "forward"
     target_group_arn = aws_alb_target_group.app.arn
+  }
+}
+
+resource "aws_lb_listener" "http" {
+  load_balancer_arn = aws_alb.app.arn
+  port              = 80
+  protocol          = "HTTP"
+
+  default_action {
+    type = "redirect"
+    redirect {
+      status_code = "HTTP_301"
+      port        = "443"
+      protocol    = "HTTPS"
+
+    }
   }
 }
 
