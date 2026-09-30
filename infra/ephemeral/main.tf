@@ -293,3 +293,15 @@ resource "aws_elasticache_replication_group" "app" {
     Name = "card-marketplace-cache"
   }
 }
+
+resource "aws_route53_record" "api" {
+  name    = "api.cardslocal.com"
+  type    = "A"
+  zone_id = data.terraform_remote_state.persistent.outputs.hosted_zone_id
+
+  alias {
+    evaluate_target_health = true
+    name                   = aws_alb.app.dns_name
+    zone_id                = aws_alb.app.zone_id
+  }
+}
