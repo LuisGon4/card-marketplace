@@ -181,6 +181,7 @@ resource "aws_ecs_task_definition" "app" {
         { name = "AWS_S3_BUCKET", value = data.terraform_remote_state.persistent.outputs.images_bucket_name },
         { name = "AWS_CLOUDFRONT_URL", value = "https://${data.terraform_remote_state.persistent.outputs.cloudfront_domain}" },
         { name = "SPRING_PROFILES_ACTIVE", value = "prod" },
+        { name = "APP_COOKIE_DOMAIN", value = "cardslocal.com" },
       ]
 
       secrets = [

@@ -11,12 +11,16 @@ import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
+import org.springframework.util.StringUtils;
 
 @Configuration
 @Profile("!dev & !seed")
 public class SecurityConfig {
     @Value("${app.frontend-url}")
     private String frontendUrl;
+
+    @Value("${app.cookie-domain}")
+    private String cookieDomain;
 
     private final OidcUserService customOidcUserService;
 
@@ -46,8 +50,13 @@ public class SecurityConfig {
 
                         CookieCsrfTokenRepository repo = CookieCsrfTokenRepository.withHttpOnlyFalse();
                         repo.setCookieCustomizer(cookie ->
-                                cookie.sameSite("Lax")
-                                .secure(true));
+                        {
+                            cookie.sameSite("Lax").secure(true);
+
+                            if (StringUtils.hasText(cookieDomain)) {
+                                cookie.domain(cookieDomain);
+                            }
+                        });
 
                         csrf
                             .csrfTokenRepository(repo)
