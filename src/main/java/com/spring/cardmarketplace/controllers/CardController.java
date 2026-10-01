@@ -7,9 +7,8 @@ import com.spring.cardmarketplace.entities.Printing;
 import com.spring.cardmarketplace.services.CardService;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
+
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -26,7 +25,6 @@ public class CardController {
         return cardService.searchByName(name);
     }
 
-    // Placeholder before actual implementation logic
     @GetMapping("/{id}/valuation")
     public ValuationResponse getValuation(@PathVariable UUID id,
                                           @RequestParam Condition condition,
