@@ -1,4 +1,9 @@
 package com.spring.cardmarketplace.dto.tcgdex;
 
-public record RarityData() {
+import java.util.List;
+
+public record RarityData(
+        String name,
+        List<SetData.CardBrief> cards
+) {
 }

@@ -1,5 +1,6 @@
 package com.spring.cardmarketplace.client;
 
+import com.spring.cardmarketplace.dto.tcgdex.RarityData;
 import com.spring.cardmarketplace.dto.tcgdex.SetBrief;
 import com.spring.cardmarketplace.dto.tcgdex.SetData;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -31,5 +32,20 @@ public class TcgDexClient {
                 .uri("/sets/{id}", setId)
                 .retrieve()
                 .body(SetData.class);
+    }
+
+    public List<String> fetchAllRarities() {
+        return tcgDexRestClient.get()
+                .uri("/rarity")
+                .retrieve()
+                .body(new ParameterizedTypeReference<List<String>>() {});
+    }
+
+
+    public RarityData fetchRarityCards(String rarity){
+        return tcgDexRestClient.get()
+                .uri("/rarity/{rarity}", rarity)
+                .retrieve()
+                .body(RarityData.class);
     }
 }
