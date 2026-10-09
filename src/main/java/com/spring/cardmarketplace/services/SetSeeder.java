@@ -60,6 +60,7 @@ public class SetSeeder {
             card.setCardName(cardBrief.name());
             card.setSetName(detail.name());
             card.setImageUrl(cardBrief.image());
+            card.setRarity(rarityMap.get(cardBrief.id()));
             toSave.add(card);
             upserted++;
         }
