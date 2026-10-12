@@ -23,7 +23,7 @@ public class Listing {
 
     // Many (Current class) to One (Data Field Class)
     @ManyToOne(fetch = FetchType.LAZY) // Many listings belong to one seller
-    @JoinColumn(name = "seller_id", nullable = false) // Foreign key w/ col name "seller_id"
+    @JoinColumn(name = "seller_id", nullable = false) // Foreign key w/ col rarityName "seller_id"
     private User seller; // listings.seller_id -> user.id
 
     // Only need from this direction because we can find all Listings with a certain
