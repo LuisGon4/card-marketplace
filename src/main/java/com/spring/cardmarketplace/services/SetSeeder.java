@@ -4,11 +4,11 @@ import com.spring.cardmarketplace.dto.tcgdex.SetData;
 import com.spring.cardmarketplace.dto.tcgdex.SetResult;
 import com.spring.cardmarketplace.entities.Card;
 import com.spring.cardmarketplace.repositories.CardRepository;
-import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +28,7 @@ public class SetSeeder {
     }
 
     @Transactional
-    public SetResult setSeed(SetData detail){
+    public SetResult setSeed(SetData detail, Map<String, String> rarityMap){
         // Store any existing cards in hashmap for O(1) lookups
         List<String> ids = detail.cards().stream()
                 .map(SetData.CardBrief::id)
@@ -36,6 +36,7 @@ public class SetSeeder {
 
         Map<String, Card> existing = cardRepository.findByTcgDexIdIn(ids).stream()
                 .collect(Collectors.toMap(Card::getTcgDexId, Function.identity()));
+
 
         int upserted = 0, failed = 0;
         List<Card> toSave = new ArrayList<>();
@@ -60,7 +61,13 @@ public class SetSeeder {
             card.setCardName(cardBrief.name());
             card.setSetName(detail.name());
             card.setImageUrl(cardBrief.image());
+            String rarity = rarityMap.get(cardBrief.id());
+            if (rarity != null) {
+                card.setRarity(rarity);
+            }
             toSave.add(card);
+
+
             upserted++;
         }
 
