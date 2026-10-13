@@ -5,14 +5,12 @@ import com.spring.cardmarketplace.dto.tcgdex.RarityData;
 import com.spring.cardmarketplace.dto.tcgdex.SetBrief;
 import com.spring.cardmarketplace.dto.tcgdex.SetData;
 import com.spring.cardmarketplace.dto.tcgdex.SetResult;
-import com.spring.cardmarketplace.repositories.CardRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,16 +64,29 @@ public class CatalogSeedService {
         List<String> rarities = tcgDexClient.fetchAllRarities();
 
         for(String rarity : rarities){
+            // TCGdex lists "None" as a rarity; leave those cards with a null rarity
+            if ("None".equals(rarity)) {
+                continue;
+            }
+
             try {
                 RarityData cardsOfRarity = tcgDexClient.fetchRarityCards(rarity);
+
+                if (cardsOfRarity == null || cardsOfRarity.cards() == null) {
+                    log.warn("Empty response for rarity {}", rarity);
+                    fails++;
+                    continue;
+                }
 
                 for (SetData.CardBrief cardBrief : cardsOfRarity.cards()) {
                     String prev = rarityMap.putIfAbsent(cardBrief.id(), rarity);
                     if (prev != null && !prev.equals(rarity)) {
-                        log.warn("Duplicate rarity found for set {}, skipping", rarity);
+                        log.warn("Card {} has multiple rarities: keeping {}, ignoring {}",
+                                cardBrief.id(), prev, rarity);
                     }
                 }
             }  catch (RestClientException e) {
+                log.warn("Failed to fetch rarity {}", rarity, e);
                 fails++;
             }
         }

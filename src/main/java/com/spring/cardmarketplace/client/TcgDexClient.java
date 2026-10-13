@@ -36,7 +36,7 @@ public class TcgDexClient {
 
     public List<String> fetchAllRarities() {
         return tcgDexRestClient.get()
-                .uri("/rarity")
+                .uri("/rarities")
                 .retrieve()
                 .body(new ParameterizedTypeReference<List<String>>() {});
     }
@@ -44,7 +44,7 @@ public class TcgDexClient {
 
     public RarityData fetchRarityCards(String rarity){
         return tcgDexRestClient.get()
-                .uri("/rarity/{rarity}", rarity)
+                .uri("/rarities/{rarity}", rarity)
                 .retrieve()
                 .body(RarityData.class);
     }
