@@ -234,12 +234,8 @@ public class ListingService {
 
 
     private void applyMarketPrice(Listing listing, Card card){
-        if(card.getJustTcgId() == null){
-            return;
-        }
-
         BigDecimal marketPrice = cardPricingService.getCachedPrice(
-                card.getJustTcgId(),
+                card,
                 listing.getCondition(),
                 listing.getPrinting()
         );

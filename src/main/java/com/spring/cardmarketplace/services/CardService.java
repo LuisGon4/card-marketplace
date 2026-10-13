@@ -33,9 +33,7 @@ public class CardService {
                         "Card not found with id: " + cardId
                 ));
 
-        BigDecimal price = (card.getJustTcgId() == null) ?
-                null :
-                cardPricingService.getCachedPrice(card.getJustTcgId(), condition, printing);
+        BigDecimal price = cardPricingService.getCachedPrice(card, condition, printing);
 
         return new ValuationResponse(
                 cardId,

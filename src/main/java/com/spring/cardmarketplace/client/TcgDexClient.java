@@ -3,15 +3,15 @@ package com.spring.cardmarketplace.client;
 import com.spring.cardmarketplace.dto.tcgdex.RarityData;
 import com.spring.cardmarketplace.dto.tcgdex.SetBrief;
 import com.spring.cardmarketplace.dto.tcgdex.SetData;
+import com.spring.cardmarketplace.dto.tcgdex.TcgDexCard;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Profile;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
 import java.util.List;
 
-@Profile("seed")
 @Component
 public class TcgDexClient {
     private final RestClient tcgDexRestClient;
@@ -47,5 +47,17 @@ public class TcgDexClient {
                 .uri("/rarities/{rarity}", rarity)
                 .retrieve()
                 .body(RarityData.class);
+    }
+
+    // Card detail incl. TCGPlayer product ids; null if the card doesn't exist
+    public TcgDexCard fetchCard(String cardId){
+        try {
+            return tcgDexRestClient.get()
+                    .uri("/cards/{id}", cardId)
+                    .retrieve()
+                    .body(TcgDexCard.class);
+        } catch (HttpClientErrorException.NotFound e) {
+            return null;
+        }
     }
 }
